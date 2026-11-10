@@ -6,6 +6,8 @@ const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const red=s=>esc(s).replace(/\u0001/g,'<span class="r">').replace(/\u0002/g,'</span>');
 function plain(n){return n.replace(/ٱ/g,'ا').replace(/ا\u0653/g,'آ').replace(/(^|\s)ال(?=[\u064B-\u0652]*\u0653)/g,'$1آل').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/ٱ/g,'ا').replace(/(^|\s)ءا/g,'$1آ')}
 let cur=1;
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{try{fitLines()}catch(e){}});
+function fitLines(){document.querySelectorAll('#txt .ln.j').forEach(e=>{if(e.dataset.b)e.style.fontSize=e.dataset.b+'cqw';const o=e.scrollWidth,w=e.clientWidth;if(o>w+1){e.style.fontSize=(parseFloat(e.style.fontSize)*w/o*0.995).toFixed(2)+'cqw'}})}
 function lineHTML(t,size,text,p,li,mk){
   const hm=D.hl[p]||{}; mk=mk||{};
   const ws=text.split(' ').map((w,wi)=>{
@@ -15,13 +17,14 @@ function lineHTML(t,size,text,p,li,mk){
     return '<span class="w hl'+f+(c>=0?' k':'')+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
-  const fs=(size/398*100).toFixed(2);
-  return '<div class="ln '+t+'" style="font-size:'+fs+'cqw">'+ws+'</div>';
+  const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
+  return '<div class="ln '+t+'" style="font-size:'+fs2+'cqw" data-b="'+fs2+'">'+ws+'</div>';
 }
 function render(p,q){
   p=Math.max(1,Math.min(604,p|0)); cur=p;
   const mk=q?findIn(p,q).marks:null;
   $('txt').innerHTML=D.pages[p-1].map((l,i)=>lineHTML(l[0],l[1],l[2],p,i,mk)).join('');
+  fitLines();
   $('pg').value=p;
   try{localStorage.setItem('mushaf-page',String(p))}catch(e){}
   try{ if(location.hash!=='#p-'+p){ try{history.replaceState(history.state,'','#p-'+p)}catch(e2){location.hash='p-'+p} } }catch(e){}
