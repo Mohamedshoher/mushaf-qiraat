@@ -73,7 +73,7 @@ function open_(c,el){
   }
   const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2><p class="tj">'+esc(m.tj)+'</p></div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
-   +'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>'+tjh+tail;
+   +'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>'+tail+tjh;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
 }
 let shOpen=false, pend=null;
