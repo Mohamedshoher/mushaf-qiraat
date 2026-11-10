@@ -71,8 +71,9 @@ function open_(c,el){
     tail='<div class="sec"><h2>الشاطبية'+(m.sn?' <span class="num">البيت '+esc(m.sn)+'</span>':'')+'</h2>'+sh+'</div>'
      +'<div class="sec"><h2>الدرة'+(m.dn?' <span class="num">البيت '+esc(m.dn)+'</span>':'')+'</h2>'+du+'</div>';
   }
+  const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2><p class="tj">'+esc(m.tj)+'</p></div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
-   +'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>'+tail;
+   +'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>'+tjh+tail;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
 }
 let shOpen=false, pend=null;

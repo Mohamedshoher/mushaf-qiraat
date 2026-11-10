@@ -102,6 +102,7 @@ button#tg.on svg{stroke:#15140f}
 .rd li{margin:0 0 10px}
 @media (prefers-reduced-motion:reduce){.sheet,.back{transition:none}}
 
+.tj{margin:0;font-size:18px;line-height:1.9;color:var(--ink);text-align:justify;font-family:"AmiriM","Amiri",serif}
 /* menu button + drawer */
 .bar{justify-content:space-between}
 .bar #pg{margin-inline:0}
