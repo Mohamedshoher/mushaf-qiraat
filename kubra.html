@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-kind="kubra">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>مصحف القراءات العشر الكبرى بأدلتها من طيبة النشر</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#eaf3f1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="مصحف القراءات">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<script>window.MUSHAF={kind:'kubra',data:'data/kubra.json'}</script>
+</head>
+<body>
+<div id="app" dir="rtl">
+  <div class="bar">
+    <button id="mn" class="ic" aria-label="القائمة" title="القائمة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <button id="pv" class="ic" aria-label="الصفحة السابقة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <input id="pg" type="number" inputmode="numeric" min="1" max="604" aria-label="رقم الصفحة"><span class="of">/٦٠٤</span>
+    <button id="nx" class="ic" aria-label="الصفحة التالية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button id="sb" class="ic" aria-label="بحث في المصحف" title="بحث"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></button>
+    <button id="tg" class="ic on" aria-pressed="true" aria-label="التظليل" title="التظليل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h8M14.5 4.5l5 5-8 8-5-1-1-5z"/></svg></button>
+  </div>
+  <div class="leaf on" id="leaf"><div class="txt" id="txt"><p class="ld">جارٍ التحميل…</p></div></div>
+</div>
+<div class="back" id="back"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="قراءات الكلمة"><div class="in" id="sin"></div></div>
+<aside class="drawer" id="drawer" aria-label="القائمة الجانبية" aria-hidden="true">
+  <div class="dh"><b>المصحف</b><button id="dclose">إغلاق</button></div>
+  <nav class="mushafs">
+    <a href="index.html" data-h="index.html" data-k="sughra">القراءات العشر الصغرى<small>شواهدها من الشاطبية والدرة</small></a>
+    <a href="kubra.html" data-h="kubra.html" data-k="kubra">القراءات العشر الكبرى<small>شواهدها من طيبة النشر</small></a>
+  </nav>
+  <h3 class="dh3">السور</h3>
+  <ol id="dsurahs"></ol>
+</aside>
+<script src="app.js"></script>
+</body>
+</html>
