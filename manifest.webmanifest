@@ -1,0 +1,18 @@
+{
+  "name": "مصحف القراءات العشر بأدلتها من الشاطبية والدرة",
+  "short_name": "مصحف القراءات",
+  "description": "المصحف في ٦٠٤ صفحة مع قراءات الفرش وشواهدها من الشاطبية والدرة",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ece6d8",
+  "theme_color": "#f7f2e6",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
