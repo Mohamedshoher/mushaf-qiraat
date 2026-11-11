@@ -36,7 +36,7 @@ function lineHTML(t,size,text,p,li,mk){
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(w)+'</span>':red(w);
-    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zt?' zn':'')+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
+    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
   const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
@@ -93,7 +93,12 @@ function open_(c,el){
     tail='<div class="sec"><h2>الشاطبية'+(m.sn?' <span class="num">البيت '+esc(m.sn)+'</span>':'')+'</h2>'+sh+'</div>'
      +'<div class="sec"><h2>الدرة'+(m.dn?' <span class="num">البيت '+esc(m.dn)+'</span>':'')+'</h2>'+du+'</div>';
   }
-  const zth=(CFG.kind==='kubra'&&m.zt)?'<div class="sec zs"><h2>زيادة النشر على الشاطبية والدرة <span class="num">منحة مولي البر'+(m.zb?' — '+esc(m.zb):'')+(m.zp?' — ص '+esc(m.zp):'')+(m.zv?' — البيت '+esc(m.zv):'')+'</span></h2><p class="tj">'+esc(m.zt)+'</p></div>':'';
+  let zth='';
+  if(CFG.kind==='kubra'&&m.zh){
+    const vv=(m.zq||[]).map(n=>D.mv&&D.mv[n]?'<div class="mv"><span class="num">'+AR(n)+'</span>'+esc(D.mv[n]).replace(' … ','<br>')+'</div>':'').join('');
+    const hh=esc(m.zh).split('\n').map(x=>'<p class="mh">'+x.replace(/^([^:：]{1,60})[:：]/,'<b>$1</b>:')+'</p>').join('');
+    zth='<div class="sec zs"><h2>زيادة النشر على الشاطبية والدرة <span class="num">منحة مولي البر'+(m.zb&&m.zb!=='فرش الحروف'?' — '+esc(m.zb):'')+'</span></h2>'+vv+'<div class="hs"><span class="hl2">الحاصل</span>'+hh+'</div></div>';
+  }
   const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2><p class="tj">'+esc(m.tj)+'</p></div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
    +(m.r||m.rs?'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;

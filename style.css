@@ -102,6 +102,11 @@ button#tg.on svg{stroke:#15140f}
 .rd li{margin:0 0 10px}
 @media (prefers-reduced-motion:reduce){.sheet,.back{transition:none}}
 
+.mv{font-family:"AmiriM","Amiri",serif;font-size:21px;line-height:1.9;text-align:center;margin:6px 0 10px;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,#3fae4a 7%,transparent)}
+.mv .num{display:inline-block;font-family:system-ui,sans-serif;font-size:12px;border:1px solid var(--line);border-radius:99px;padding:0 9px;margin-inline-end:8px;color:var(--muted);vertical-align:middle}
+.hs{margin-top:4px}.hs .hl2{display:inline-block;font-family:system-ui,sans-serif;font-size:12px;font-weight:700;color:#fff;background:#1b7a3a;border-radius:6px;padding:1px 9px;margin-bottom:4px}
+.mh{margin:3px 0;font-size:18.5px;line-height:1.8;font-family:"AmiriM","Amiri",serif;color:var(--ink)}
+.mh b{color:#1b7a3a}
 .sec h2{flex-wrap:wrap}
 .sec.zs h2 .num{white-space:normal;text-align:right;line-height:1.5}
 .gh{color:#12a52e!important}
