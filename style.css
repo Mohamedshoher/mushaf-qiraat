@@ -102,6 +102,9 @@ button#tg.on svg{stroke:#15140f}
 .rd li{margin:0 0 10px}
 @media (prefers-reduced-motion:reduce){.sheet,.back{transition:none}}
 
+.gh{color:#12a52e!important}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .gh{color:#5fe07a!important}}
+html[data-theme="dark"] .gh{color:#5fe07a!important}
 .on .w.hl.zn{background:#8fe08a;color:#073b12}
 .on .w.hl.zn .r{color:#a01010}
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) .on .w.hl.zn{background:#2f7a35;color:#f0fff0}}

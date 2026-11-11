@@ -3,14 +3,36 @@ let D=null; const CFG=window.MUSHAF||{kind:'sughra',data:'data/sughra.json'};
 const $=id=>document.getElementById(id);
 const AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const red=s=>esc(s).replace(/\u0001/g,'<span class="r">').replace(/\u0002/g,'</span>');
+const red=s=>esc(s).replace(/\u0001/g,'<span class="r">').replace(/[\u0002\u0004]/g,'</span>').replace(/\u0003/g,'<span class="gh">');
+const MKS='[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED\\u08D3-\\u08FF]';
+const RE_GH=new RegExp('^(\\u0001?)([\u0644\u0631])('+MKS+'*)');
+function ghn(prev,w){
+  if(!prev) return w;
+  const m=w.match(RE_GH); if(!m||m[3].indexOf('\u0651')<0) return w;
+  let p=prev.replace(/[\u0001-\u0004]/g,'').replace(/[\u06D6-\u06DC\u06DE\u06E9\u06DD\u0660-\u0669\s]+$/,'');
+  if(!p) return w;
+  const cl=p.match(new RegExp('(.)('+MKS+'*)$')); if(!cl) return w;
+  let ok=false;
+  if(cl[1]==='\u0646'&&cl[2].indexOf('\u06E1')<0&&cl[2].indexOf('\u0652')<0) ok=true;
+  else if(/[\u08F0-\u08F2\u064B-\u064D]/.test(cl[2])) ok=true;
+  else if(/[\u0627\u0649]/.test(cl[1])&&cl[2]===''){ const q=p.slice(0,-1).match(new RegExp('(.)('+MKS+'*)$')); if(q&&/[\u08F0-\u08F2\u064B-\u064D]/.test(q[2])) ok=true; }
+  if(!ok) return w;
+  return m[1]+'\u0003'+m[2]+m[3]+'\u0004'+w.slice(m[0].length);
+}
+function prevWordOf(p,li){
+  const L=D.pages[p-1]; if(li>0){ const l=L[li-1]; if(l[0]==='j'||l[0]==='c'){ const a=l[2].split(' '); return a[a.length-1]; } return ''; }
+  if(p>1){ const l=D.pages[p-2]; const x=l[l.length-1]; if(x&&x[0]==='j'){ const a=x[2].split(' '); return a[a.length-1]; } }
+  return '';
+}
 function plain(n){return n.replace(/ٱ/g,'ا').replace(/ا\u0653/g,'آ').replace(/(^|\s)ال(?=[\u064B-\u0652]*\u0653)/g,'$1آل').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/ٱ/g,'ا').replace(/(^|\s)ءا/g,'$1آ')}
 let cur=1;
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{try{fitLines()}catch(e){}});
 function fitLines(){document.querySelectorAll('#txt .ln.j').forEach(e=>{if(e.dataset.b)e.style.fontSize=e.dataset.b+'cqw';const o=e.scrollWidth,w=e.clientWidth;if(o>w+1){e.style.fontSize=(parseFloat(e.style.fontSize)*w/o*0.995).toFixed(2)+'cqw'}})}
 function lineHTML(t,size,text,p,li,mk){
   const hm=D.hl[p]||{}; mk=mk||{};
-  const ws=text.split(' ').map((w,wi)=>{
+  const parts=text.split(' ');
+  const ws=parts.map((w0,wi)=>{
+    const w=(t==='j'&&CFG.kind==='kubra')?ghn(wi>0?parts[wi-1]:prevWordOf(p,li),w0):w0;
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(w)+'</span>':red(w);
