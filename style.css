@@ -102,6 +102,12 @@ button#tg.on svg{stroke:#15140f}
 .rd li{margin:0 0 10px}
 @media (prefers-reduced-motion:reduce){.sheet,.back{transition:none}}
 
+.on .w.hl.zn{background:#8fe08a;color:#073b12}
+.on .w.hl.zn .r{color:#a01010}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .on .w.hl.zn{background:#2f7a35;color:#f0fff0}}
+html[data-theme="dark"] .on .w.hl.zn{background:#2f7a35;color:#f0fff0}
+.sec.zs h2{color:#1b7a3a}
+.sec.zs{border-inline-start:3px solid #3fae4a;padding-inline-start:10px}
 .tj{margin:0;font-size:18px;line-height:1.9;color:var(--ink);text-align:justify;font-family:"AmiriM","Amiri",serif}
 /* menu button + drawer */
 .bar{justify-content:space-between}
