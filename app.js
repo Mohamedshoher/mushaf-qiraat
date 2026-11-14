@@ -101,7 +101,7 @@ function open_(c,el){
   }
   const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2>'+(m.tjs&&m.tjs.length&&m.rs?'<div class="tjl">'+m.tjs.slice().sort((a,b)=>a.i-b.i).map(x=>{const r=m.rs[x.i-1];return '<div class="tji"><div class="tjw"><span class="tjn">'+(x.i).toLocaleString('ar-EG')+'</span>'+(r?esc(r.w):'')+(r&&r.who?' <span class="tjwho">'+esc(r.who)+'</span>':'')+'</div><p class="tj">'+esc(x.t)+'</p></div>'}).join('')+'</div>':'<p class="tj">'+esc(m.tj)+'</p>')+'</div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
-   +(m.r||m.rs?'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;
+   +(m.r||m.rs?'<div class="sec"><h2>القراءات'+(m.hd?' <span class=num>الهادي لمحيسن</span>':'')+'</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
 }
 let shOpen=false, pend=null;
