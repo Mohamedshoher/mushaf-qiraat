@@ -99,7 +99,7 @@ function open_(c,el){
     const hh=esc(m.zh).split('\n').map(x=>'<p class="mh">'+x.replace(/^([^:：]{1,60})[:：]/,'<b>$1</b>:')+'</p>').join('');
     zth='<div class="sec zs"><h2>زيادة النشر على الشاطبية والدرة <span class="num">منحة مولي البر'+(m.zb&&m.zb!=='فرش الحروف'?' — '+esc(m.zb):'')+'</span></h2>'+vv+'<div class="hs"><span class="hl2">الحاصل</span>'+hh+'</div></div>';
   }
-  const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2><p class="tj">'+esc(m.tj)+'</p></div>':'';
+  const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2>'+(m.tjs&&m.tjs.length&&m.rs?'<div class="tjl">'+m.tjs.slice().sort((a,b)=>a.i-b.i).map(x=>{const r=m.rs[x.i-1];return '<div class="tji"><div class="tjw"><span class="tjn">'+(x.i).toLocaleString('ar-EG')+'</span>'+(r?esc(r.w):'')+(r&&r.who?' <span class="tjwho">'+esc(r.who)+'</span>':'')+'</div><p class="tj">'+esc(x.t)+'</p></div>'}).join('')+'</div>':'<p class="tj">'+esc(m.tj)+'</p>')+'</div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
    +(m.r||m.rs?'<div class="sec"><h2>القراءات</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();

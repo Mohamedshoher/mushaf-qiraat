@@ -118,6 +118,7 @@ html[data-theme="dark"] .gh{color:#5fe07a!important}
 html[data-theme="dark"] .on .w.hl.zn{background:#2f7a35;color:#f0fff0}
 .sec.zs h2{color:#1b7a3a}
 .sec.zs{border-inline-start:3px solid #3fae4a;padding-inline-start:10px}
+.tjl{display:flex;flex-direction:column;gap:10px}.tji{padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.035);border-inline-start:3px solid var(--accent)}.tjw{font-size:19px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px}.tjn{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:99px;background:var(--accent);color:#fff;font:700 13px system-ui,sans-serif}.tjwho{font-size:13px;font-weight:400;color:var(--muted)}
 .tj{margin:0;font-size:18px;line-height:1.9;color:var(--ink);text-align:justify;font-family:"AmiriM","Amiri",serif}
 /* menu button + drawer */
 .bar{justify-content:space-between}
