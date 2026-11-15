@@ -47,7 +47,7 @@ function render(p,q){
   p=Math.max(1,Math.min(604,p|0)); cur=p;
   const mk=q?findIn(p,q).marks:null;
   $('txt').innerHTML=D.pages[p-1].map((l,i)=>lineHTML(l[0],l[1],l[2],p,i,mk)).join('');
-  $('txt').classList.toggle('rvm',rivOn());
+  $('txt').classList.toggle('rwm',rivOn());
   fitLines();
   $('pg').value=p;
   try{localStorage.setItem('mushaf-page',String(p))}catch(e){}
@@ -235,7 +235,7 @@ const ASLN={IW:'نافع',IJ:'نافع',RW:'أبي عمرو',RH:'أبي عمرو
 let RIW='',RMODE='diff';
 try{RIW=localStorage.getItem('mushaf-riw')||'';RMODE=localStorage.getItem('mushaf-rmode')||'diff'}catch(e){}
 
-const USL_ON=false; // تُفعَّل بعد مراجعة جداول الأصول
+const USL_ON=true;
 const USL_N={mt:'المد المتصل',mf:'المد المنفصل',mj:'صلة ميم الجمع'};
 const USL_R={"Q": {"mt": {"v": "التوسط (٤ حركات)", "d": 0, "sn": "١٦٨", "st": "إِذَا أَلِفٌ أَوْ يَاؤُهَا بَعْدَ كَسْرَةٍ ... أَوِ الْوَاوُ عَنْ ضَمٍّ لَقِي الْهَمْزَ طُوِّلَا"}, "mf": {"v": "القصر أو التوسط", "d": 1, "sn": "١٦٩", "st": "فَإِنْ يَنْفَصِلْ فَالْقَصْرَ بَادِرْهُ طَالِباً ... بِخُلْفِهِماَ يُرْوِيكَ دَرًّا وَمُخْضَلَا"}, "mj": {"v": "وجهان: صلة الميم أو إسكانها", "d": 1, "sn": "١١١", "st": "وَصِلْ ضَمَّ مِيمِ الْجَمْعِ قَبْلَ مُحَرَّكٍ ... دِرَاكاً وَقاَلُونٌ بِتَخْيِيرِهِ جَلَا"}}};
 const nextWordOf=(p,li)=>{ const L=D.pages[p-1]; let l=L[li+1]; if(!l&&p<604) l=D.pages[p][0]; if(!l||l[0]==='h') return ''; return l[2].split(' ')[0] };
