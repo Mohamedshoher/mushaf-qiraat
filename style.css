@@ -201,3 +201,5 @@ body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
 #txt.rwm .u.d{color:var(--red);cursor:pointer}
 #txt.rwm .w.hl.rv1{background:var(--hl);color:var(--hl-ink);box-shadow:none;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:0 .12em;margin:0 -.12em;cursor:pointer}
 #txt.rwm .w.hl.rv1 .r{color:var(--hl-red)}
+
+.srcl{margin:6px 0 0;font:12px system-ui,'Segoe UI',sans-serif;color:var(--muted)}

@@ -37,7 +37,7 @@ function lineHTML(t,size,text,p,li,mk){
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
-    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
+    return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
   const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
@@ -83,6 +83,15 @@ function items(r){
   return '<ol class="rd">'+a.map(x=>'<li>'+fmt(x)+'</li>').join('')+'</ol>';
 }
 function verses(t){return t.split('\n').map(v=>'<p class="v">'+v.split(' ... ').map(h=>'<span>'+esc(h)+'</span>').join('')+'</p>').join('')}
+function srcLine(m){
+  if(CFG.kind!=='kubra') return '';
+  const s=[];
+  if(m.r&&!m.hd) s.push('تحبير التيسير');
+  if(m.hd) s.push('الهادي لمحيسن');
+  if(m.zh) s.push('زيادة من منحة مولى البر');
+  if(m.tj) s.push('التوجيه: ابن زنجلة');
+  return s.length?'<p class="srcl">المصدر: '+s.map(esc).join(' · ')+'</p>':'';
+}
 function open_(c,el){
   const m=D.com[c]; if(!m) return;
   let tail='';
@@ -110,6 +119,7 @@ function open_(c,el){
   }
   const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2>'+(m.tjs&&m.tjs.length&&m.rs?'<div class="tjl">'+m.tjs.slice().sort((a,b)=>a.i-b.i).map(x=>{const r=m.rs[x.i-1];return '<div class="tji"><div class="tjw"><span class="tjn">'+(x.i).toLocaleString('ar-EG')+'</span>'+(r?esc(r.w):'')+(r&&r.who?' <span class="tjwho">'+esc(r.who)+'</span>':'')+'</div><p class="tj">'+esc(x.t)+'</p></div>'}).join('')+'</div>':'<p class="tj">'+esc(m.tj)+'</p>')+'</div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
+   +srcLine(m)
    +rivCard(m)
    +(m.r||m.rs?'<div class="sec"><h2>القراءات'+(m.hd?' <span class=num>الهادي لمحيسن'+(m.hb?' — '+esc(m.hb):'')+'</span>':'')+'</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
