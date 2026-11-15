@@ -195,3 +195,9 @@ body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
 .rvnote{font-size:14px;color:var(--muted);margin:4px 0}
 
 .ayn{font-family:"AmiriM",serif}
+
+#txt.rvm .r{color:inherit}
+#txt.rvm .w.hl.rv1 .r{color:var(--red)}
+#txt.rvm .u.d{color:var(--red);cursor:pointer}
+#txt.rvm .w.hl.rv1{background:var(--hl);color:var(--hl-ink);box-shadow:none;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:0 .12em;margin:0 -.12em;cursor:pointer}
+#txt.rvm .w.hl.rv1 .r{color:var(--hl-red)}

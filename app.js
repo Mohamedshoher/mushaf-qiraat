@@ -3,7 +3,7 @@ let D=null; const CFG=window.MUSHAF||{kind:'sughra',data:'data/sughra.json'};
 const $=id=>document.getElementById(id);
 const AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const red=s=>esc(s).replace(/(\u06DD[\u0660-\u0669]+)/g,'<span class="ayn">$1</span>').replace(/\u0001/g,'<span class="r">').replace(/[\u0002\u0004]/g,'</span>').replace(/\u0003/g,'<span class="gh">');
+const red=s=>esc(s).replace(/\u0005(\w\w)(\w)/g,'<span class="u $2" data-t="$1">').replace(/\u0007/g,'</span>').replace(/(\u06DD[\u0660-\u0669]+)/g,'<span class="ayn">$1</span>').replace(/\u0001/g,'<span class="r">').replace(/[\u0002\u0004]/g,'</span>').replace(/\u0003/g,'<span class="gh">');
 const MKS='[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED\\u08D3-\\u08FF]';
 const RE_GH=new RegExp('^(\\u0001?)([\u0644\u0631])('+MKS+'*)');
 function ghn(prev,w){
@@ -33,10 +33,11 @@ function lineHTML(t,size,text,p,li,mk){
   const parts=text.split(' ');
   const ws=parts.map((w0,wi)=>{
     const w=(t==='j'&&CFG.kind==='kubra')?ghn(wi>0?parts[wi-1]:prevWordOf(p,li),w0):w0;
+    const wu=usulWrap(w,wi+1<parts.length?parts[wi+1]:nextWordOf(p,li));
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
-    if(c===undefined) return f?'<span class="fd">'+red(w)+'</span>':red(w);
-    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
+    if(c===undefined) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
+    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
   const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
@@ -46,6 +47,7 @@ function render(p,q){
   p=Math.max(1,Math.min(604,p|0)); cur=p;
   const mk=q?findIn(p,q).marks:null;
   $('txt').innerHTML=D.pages[p-1].map((l,i)=>lineHTML(l[0],l[1],l[2],p,i,mk)).join('');
+  $('txt').classList.toggle('rvm',rivOn());
   fitLines();
   $('pg').value=p;
   try{localStorage.setItem('mushaf-page',String(p))}catch(e){}
@@ -205,7 +207,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') render(cur+1); else if(e.key==='ArrowRight') render(cur-1);
   if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('hl')){e.preventDefault();e.target.click()}
 });
-$('txt').addEventListener('click',e=>{const el=e.target.closest('.w.hl.k'); if(el&&$('leaf').classList.contains('on')) open_(+el.dataset.c,el)});
+$('txt').addEventListener('click',e=>{const el=e.target.closest('.w.hl.k'); if(el&&($('leaf').classList.contains('on')||rivOn())) open_(+el.dataset.c,el)});
 $('nx').onclick=()=>render(cur+1); $('pv').onclick=()=>render(cur-1);
 $('pg').addEventListener('change',()=>render(+$('pg').value||1));
 $('mn').onclick=()=>showDrawer(); $('dclose').onclick=()=>closeDrawer();
@@ -232,6 +234,58 @@ const ASL={IW:['Q','W'],IJ:['Q','W'],RW:['DA','S'],RH:['DA','S'],IS:['KH','KD'],
 const ASLN={IW:'نافع',IJ:'نافع',RW:'أبي عمرو',RH:'أبي عمرو',IS:'حمزة',ID:'حمزة'};
 let RIW='',RMODE='diff';
 try{RIW=localStorage.getItem('mushaf-riw')||'';RMODE=localStorage.getItem('mushaf-rmode')||'diff'}catch(e){}
+
+const USL_ON=false; // تُفعَّل بعد مراجعة جداول الأصول
+const USL_N={mt:'المد المتصل',mf:'المد المنفصل',mj:'صلة ميم الجمع'};
+const USL_R={"Q": {"mt": {"v": "التوسط (٤ حركات)", "d": 0, "sn": "١٦٨", "st": "إِذَا أَلِفٌ أَوْ يَاؤُهَا بَعْدَ كَسْرَةٍ ... أَوِ الْوَاوُ عَنْ ضَمٍّ لَقِي الْهَمْزَ طُوِّلَا"}, "mf": {"v": "القصر أو التوسط", "d": 1, "sn": "١٦٩", "st": "فَإِنْ يَنْفَصِلْ فَالْقَصْرَ بَادِرْهُ طَالِباً ... بِخُلْفِهِماَ يُرْوِيكَ دَرًّا وَمُخْضَلَا"}, "mj": {"v": "وجهان: صلة الميم أو إسكانها", "d": 1, "sn": "١١١", "st": "وَصِلْ ضَمَّ مِيمِ الْجَمْعِ قَبْلَ مُحَرَّكٍ ... دِرَاكاً وَقاَلُونٌ بِتَخْيِيرِهِ جَلَا"}}};
+const nextWordOf=(p,li)=>{ const L=D.pages[p-1]; let l=L[li+1]; if(!l&&p<604) l=D.pages[p][0]; if(!l||l[0]==='h') return ''; return l[2].split(' ')[0] };
+function usulWrap(w,nx){
+  if(!USL_ON||!rivOn()||!USL_R[RIW]) return w;
+  const T=USL_R[RIW], K=/[\u0001-\u0004]/g;
+  const isMark=c=>/[\u064B-\u065F\u0670\u06D6-\u06ED]/.test(c), isCtl=c=>/[\u0001-\u0004]/.test(c);
+  const cl=[]; for(const c of w){ if(!isCtl(c)&&isMark(c)&&cl.length&&!isCtl(cl[cl.length-1][0])) cl[cl.length-1].push(c); else cl.push([c]); }
+  const HZ=/[ءأإؤئ]/, MD=/[اآويى]/;
+  const nxs=(nx||'').replace(K,''); const nb=nxs.replace(/^[\u064B-\u065F\u0670\u06D6-\u06ED]+/,'')[0]||'';
+  const tag=new Array(cl.length).fill('');
+  const idx=cl.map((c,i)=>isCtl(c[0])?-1:i).filter(i=>i>=0);
+  idx.forEach((i,k)=>{
+    const c=cl[i], s=c.join(''), b=c[0];
+    if(!s.includes('\u0653')&&b!=='آ') return;
+    if(!(MD.test(b)||/[\u0670\u06E5\u06E6]/.test(s))) return;
+    // الحروف التالية في الكلمة (من غير الألف الساكنة الأخيرة)
+    let rest=idx.slice(k+1).map(j=>cl[j]);
+    const silent=r=>r.length===1&&r[0][0]==='ا';
+    if(rest.length&&silent(rest[rest.length-1]) && rest.length===1) rest=[];
+    if(rest.length){
+      const r0=rest[0], rs=r0.join('');
+      if(HZ.test(r0[0])||/[\u0654\u0655]/.test(rs)){ const first=(k===1&&/[\u0670]/.test(s)); tag[i]=first?'mf':'mt'; }
+    } else if(HZ.test(nb)) tag[i]='mf';
+  });
+  // ميم الجمع
+  const plain=w.replace(K,'');
+  if(T.mj && /[هكت][\u064F\u0650]\u0645[\u0652\u06E1]$/.test(plain) && nb && nb!=='ٱ'){
+    for(let k=idx.length-1;k>=0;k--){ if(cl[idx[k]][0]==='م'){ tag[idx[k]]='mj'; break } }
+  }
+  let out='';
+  for(let i=0;i<cl.length;i++){
+    const t=tag[i], c=cl[i];
+    if(!t||!T[t]||c.some(isCtl)){ out+=c.join(''); continue }
+    const op='\u0005'+t+(T[t].d?'d':'n');
+    const nx2=cl[i+1];
+    if(/[اآ]/.test(c[0])&&i>0&&cl[i-1][0]==='ل'&&!isCtl(cl[i-1][0])&&out.endsWith(cl[i-1].join(''))){ out=out.slice(0,out.length-cl[i-1].join('').length)+op+cl[i-1].join('')+c.join('')+'\u0007' }
+    else out+=op+c.join('')+'\u0007';
+  }
+  return out;
+}
+$('txt').addEventListener('click',e=>{
+  const el=e.target.closest('.u.d'); if(!el||!rivOn()) return;
+  const t=el.dataset.t, T=(USL_R[RIW]||{})[t]; if(!T) return;
+  $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+esc(USL_N[t])+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
+   +'<div class="sec"><h2>'+esc(RWN[RIW]||'')+' <span class="num">'+esc(USL_N[t])+'</span></h2><ul class="rd"><li>'+esc(T.v)+'</li></ul></div>'
+   +'<div class="sec rvs"><h2>الشاطبية <span class="num">البيت '+esc(T.sn)+'</span></h2>'+verses(T.st)+'<p class="none">نموذج تجريبي: القيمة تحتاج مراجعتك.</p></div>';
+  showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
+});
+
 const rivOn=()=>CFG.kind==='sughra'&&!!RIW;
 const rbit=c=>1<<RW.indexOf(c);
 function linesOf(m,code){ if(!m||!m.rv) return null; const b=rbit(code),L=[]; m.rv.forEach((x,j)=>{ if(x&b) L.push(j) }); return L }
