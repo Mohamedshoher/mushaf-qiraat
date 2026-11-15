@@ -116,19 +116,29 @@ function close_(cb){
   hideSheet(); if(cb)cb();
 }
 let drOpen=false, drPend=null;
+const JUZ=[[1, 1, 1, 1], [2, 22, 2, 142], [3, 42, 2, 253], [4, 62, 3, 93], [5, 82, 4, 24], [6, 102, 4, 148], [7, 121, 5, 82], [8, 142, 6, 111], [9, 162, 7, 88], [10, 182, 8, 41], [11, 201, 9, 93], [12, 222, 11, 6], [13, 242, 12, 53], [14, 262, 15, 1], [15, 282, 17, 1], [16, 302, 18, 75], [17, 322, 21, 1], [18, 342, 23, 1], [19, 362, 25, 21], [20, 382, 27, 56], [21, 402, 29, 46], [22, 422, 33, 31], [23, 442, 36, 28], [24, 462, 39, 32], [25, 482, 41, 47], [26, 502, 46, 1], [27, 522, 51, 31], [28, 542, 58, 1], [29, 562, 67, 1], [30, 582, 78, 1]];
+const NRM=s=>plain(String(s)).replace(/[ً-ٰٟۖ-ۭـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/^\s*سوره\s*/,'').trim();
 function buildDrawer(){
-  $('dsurahs').innerHTML=D.surahs.map((s,i)=>'<li><button data-p="'+s[2]+'" data-i="'+i+'"><span class="n">'+AR(s[0])+'</span><span>'+esc(plain(s[1]).replace(/ي$/,'ى'))+'</span><small>ص '+AR(s[2])+'</small></button></li>').join('');
+  $('dsurahs').innerHTML=D.surahs.map((s,i)=>'<li data-q="'+esc(NRM(s[1])+' '+NRM('سورة '+s[1])+' '+s[0])+'"><button data-p="'+s[2]+'" data-i="'+i+'"><span class="n">'+AR(s[0])+'</span><span>'+esc(plain(s[1]).replace(/ي$/,'ى'))+'</span><small>ص '+AR(s[2])+'</small></button></li>').join('');
+  $('djuz').innerHTML=JUZ.map(j=>{const s=D.surahs[j[2]-1];return '<li><button data-p="'+j[1]+'"><span>الجزء '+AR(j[0])+'<em>'+esc(plain(s?s[1]:'').replace(/ي$/,'ى'))+' '+AR(j[3])+'</em></span><small>ص '+AR(j[1])+'</small></button></li>'}).join('');
+  const q=$('dq');
+  q.addEventListener('input',()=>{const v=NRM(q.value);let n=0;document.querySelectorAll('#dsurahs li').forEach(li=>{const ok=!v||li.dataset.q.includes(v);li.hidden=!ok;if(ok)n++});$('dnone').hidden=n>0});
+  const tab=t=>{const s=t==='S';$('tabS').setAttribute('aria-selected',s);$('tabJ').setAttribute('aria-selected',!s);$('paneS').hidden=!s;$('paneJ').hidden=s;try{localStorage.setItem('mushaf-dtab',t)}catch(e){};markDrawer()};
+  $('tabS').onclick=()=>tab('S'); $('tabJ').onclick=()=>tab('J');
+  let t0='S'; try{t0=localStorage.getItem('mushaf-dtab')||'S'}catch(e){}; tab(t0);
 }
 function surahIdx(p){let k=0;D.surahs.forEach((x,i)=>{if(x[2]<=p)k=i});return k}
+function juzIdx(p){let k=0;JUZ.forEach((x,i)=>{if(x[1]<=p)k=i});return k}
 function markDrawer(){
   const k=surahIdx(cur); document.querySelectorAll('#dsurahs button').forEach((b,i)=>b.classList.toggle('cur',i===k));
-  document.querySelectorAll('.mushafs a').forEach(a=>{ a.classList.toggle('cur',a.dataset.k===CFG.kind); a.href=a.dataset.h+'#p-'+cur });
+  const j=juzIdx(cur); document.querySelectorAll('#djuz button').forEach((b,i)=>b.classList.toggle('cur',i===j));
+  document.querySelectorAll('.seg a').forEach(a=>{ a.classList.toggle('cur',a.dataset.k===CFG.kind); a.href=a.dataset.h+'#p-'+cur });
 }
 function showDrawer(){
   if(drOpen) return; drOpen=true; markDrawer();
   $('drawer').classList.add('o'); $('back').classList.add('o'); $('drawer').setAttribute('aria-hidden','false');
   try{history.pushState({dr:1},'')}catch(e){}
-  const c=document.querySelector('#dsurahs button.cur'); if(c) c.scrollIntoView({block:'center'});
+  const c=document.querySelector(($('paneJ').hidden?'#dsurahs':'#djuz')+' button.cur'); if(c) c.scrollIntoView({block:'center'});
 }
 function hideDrawer(){ drOpen=false; $('drawer').classList.remove('o'); if(!shOpen) $('back').classList.remove('o'); $('drawer').setAttribute('aria-hidden','true') }
 function closeDrawer(cb){
@@ -199,7 +209,7 @@ $('txt').addEventListener('click',e=>{const el=e.target.closest('.w.hl.k'); if(e
 $('nx').onclick=()=>render(cur+1); $('pv').onclick=()=>render(cur-1);
 $('pg').addEventListener('change',()=>render(+$('pg').value||1));
 $('mn').onclick=()=>showDrawer(); $('dclose').onclick=()=>closeDrawer();
-$('dsurahs').addEventListener('click',e=>{const b=e.target.closest('button[data-p]'); if(!b) return; const pp=+b.dataset.p; closeDrawer(()=>render(pp))});
+$('drawer').addEventListener('click',e=>{const b=e.target.closest('button[data-p]'); if(!b) return; const pp=+b.dataset.p; closeDrawer(()=>render(pp))});
 let ex=null,ey=0,edge=false;
 document.addEventListener('touchstart',e=>{const t=e.touches[0]; ex=t.clientX; ey=t.clientY; edge=(innerWidth-ex)<=26&&!drOpen&&!shOpen},{passive:true});
 document.addEventListener('touchend',e=>{
@@ -217,6 +227,7 @@ try{ if('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navi
 const RW=['Q','W','B','QN','DA','S','H','DZ','SH','HF','KH','KD','AH','DK','IW','IJ','RW','RH','IS','ID'];
 const RWN={Q:'قالون',W:'ورش',B:'البزي',QN:'قنبل',DA:'الدوري عن أبي عمرو',S:'السوسي',H:'هشام',DZ:'ابن ذكوان',SH:'شعبة',HF:'حفص',KH:'خلف عن حمزة',KD:'خلاد',AH:'أبو الحارث',DK:'الدوري عن الكسائي',IW:'ابن وردان',IJ:'ابن جماز',RW:'رويس',RH:'روح',IS:'إسحاق',ID:'إدريس'};
 const IMAMS=[['نافع',['Q','W']],['ابن كثير',['B','QN']],['أبو عمرو',['DA','S']],['ابن عامر',['H','DZ']],['عاصم',['SH','HF']],['حمزة',['KH','KD']],['الكسائي',['AH','DK']],['أبو جعفر',['IW','IJ']],['يعقوب',['RW','RH']],['خلف العاشر',['IS','ID']]];
+const RWS={DA:'الدوري',DK:'الدوري',KH:'خلف'}, RWB={DA:'دوري أبي عمرو',DK:'دوري الكسائي'};
 const ASL={IW:['Q','W'],IJ:['Q','W'],RW:['DA','S'],RH:['DA','S'],IS:['KH','KD'],ID:['KH','KD']};
 const ASLN={IW:'نافع',IJ:'نافع',RW:'أبي عمرو',RH:'أبي عمرو',IS:'حمزة',ID:'حمزة'};
 let RIW='',RMODE='diff';
@@ -268,16 +279,30 @@ function rivCard(m){
   else if(L.length&&m.tj) h+='<p class="none">لم يذكر ابن زنجلة توجيهاً خاصاً بهذه القراءة.</p>';
   return h+'</div>';
 }
+function rvLabel(){ const l=$('rvlab'); if(!l) return; l.textContent=CFG.kind!=='sughra'?'قريباً':(RIW?(RWB[RIW]||RWN[RIW]):'بلا رواية'); $('rvbtn').classList.toggle('on',CFG.kind==='sughra'&&!!RIW) }
+function rvPanel(){
+  const p=$('rvpan');
+  if(CFG.kind!=='sughra'){ p.innerHTML='<div class="rvh"><b>الرواية</b><button class="rvx">إغلاق</button></div><p class="rvnote">اختيار الرواية متاح الآن في مصحف العشر الصغرى، ويأتي في الكبرى بعد ضبط أوجه الطيبة.</p>'; return }
+  p.innerHTML='<div class="rvh"><b>اختر الرواية</b><button class="rvx">إغلاق</button></div>'
+   +'<button class="rvall'+(RIW?'':' cur')+'" data-r="">بلا رواية — كل مواضع الخلاف</button>'
+   +IMAMS.map(([n,rs])=>'<div class="rvrow"><span>'+n+'</span>'+rs.map(r=>'<button data-r="'+r+'"'+(r===RIW?' class="cur"':'')+'>'+(RWS[r]||RWN[r])+'</button>').join('')+'</div>').join('')
+   +((RIW&&RIW!=='HF')?'<div class="rvm"><b>التظليل</b><label><input type="radio" name="rvm" value="diff"'+(RMODE==='diff'?' checked':'')+'> مواضع مخالفة حفص فقط</label><label><input type="radio" name="rvm" value="all"'+(RMODE==='all'?' checked':'')+'> كل مواضع الخلاف</label></div>':'');
+  p.querySelectorAll('input[name=rvm]').forEach(x=>x.onchange=()=>{ RMODE=x.value; try{localStorage.setItem('mushaf-rmode',RMODE)}catch(e){}; render(cur); closeRv() });
+}
+let rvOpen=false;
+function openRv(){ rvPanel(); rvOpen=true; $('rvpop').classList.add('o'); const c=$('rvpan').querySelector('.cur'); if(c) c.focus() }
+function closeRv(){ rvOpen=false; $('rvpop').classList.remove('o'); $('rvbtn').focus() }
 function buildRiv(){
-  const box=$('rvbox'); if(!box) return;
-  if(CFG.kind!=='sughra'){ box.innerHTML='<h3 class="dh3">الرواية</h3><p class="rvnote">اختيار الرواية متاح الآن في مصحف الصغرى، وسيأتي في الكبرى بعد ضبط أوجه الطيبة.</p>'; return }
-  box.innerHTML='<h3 class="dh3">الرواية</h3><select id="rvsel" aria-label="اختر الرواية"><option value="">بلا رواية — كل مواضع الخلاف</option>'
-   +IMAMS.map(([n,rs])=>'<optgroup label="'+n+'">'+rs.map(r=>'<option value="'+r+'">'+RWN[r]+'</option>').join('')+'</optgroup>').join('')+'</select>'
-   +'<div class="rvm" role="radiogroup"><label><input type="radio" name="rvm" value="diff"> مواضع مخالفة حفص فقط</label><label><input type="radio" name="rvm" value="all"> كل مواضع الخلاف</label></div>';
-  const sel=$('rvsel'); sel.value=RIW;
-  box.querySelectorAll('input[name=rvm]').forEach(x=>{ x.checked=x.value===RMODE; x.onchange=()=>{ RMODE=x.value; try{localStorage.setItem('mushaf-rmode',RMODE)}catch(e){}; render(cur) } });
-  const sync=()=>{ box.querySelector('.rvm').style.display=(RIW&&RIW!=='HF')?'':'none' }; sync();
-  sel.onchange=()=>{ RIW=sel.value; try{localStorage.setItem('mushaf-riw',RIW)}catch(e){}; sync(); render(cur) };
+  rvLabel();
+  $('rvbtn').onclick=openRv;
+  $('rvpop').addEventListener('click',e=>{
+    if(e.target===$('rvpop')||e.target.closest('.rvx')) return closeRv();
+    const b=e.target.closest('button[data-r]'); if(!b) return;
+    RIW=b.dataset.r; try{localStorage.setItem('mushaf-riw',RIW)}catch(e){}
+    rvLabel(); render(cur);
+    if(RIW&&RIW!=='HF') rvPanel(); else closeRv();
+  });
+  document.addEventListener('keydown',e=>{ if(rvOpen&&e.key==='Escape'){ e.stopPropagation(); closeRv() } },true);
 }
 
 function start(){
