@@ -147,52 +147,6 @@ html[data-kind="kubra"]{--accent:#1b5e58;--frame:#1b5e58;--frame2:#5fae9f;--bar:
 html[data-kind="kubra"] .mushafs a.cur{border-color:var(--accent)}
 .ld{padding:40px 16px;text-align:center;color:var(--muted);font:15px system-ui,sans-serif}
 
-body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
-.leaf{width:min(100%,calc((100dvh - 128px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/1.84))}
-.bot{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bar);border-top:1px solid var(--line);padding:8px max(10px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px))}
-.botin{max-width:620px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dd{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50px;border:1px solid var(--line);border-radius:12px;background:var(--leaf);color:var(--ink);padding:3px 26px;line-height:1.25;cursor:pointer}
-.dd small{font:12px system-ui,"Segoe UI",sans-serif;color:var(--muted)}
-.dd b{font:700 16px "AmiriM","Amiri",serif}
-.dd i{position:absolute;inset-inline-start:10px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--muted);transition:transform .15s}
-.dd.open{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
-.dd.open i{transform:translateY(-50%) rotate(180deg)}
-.dd.on{border:2px solid var(--accent)}
-.bot.ddo{z-index:30}
-.mback{position:fixed;inset:0;z-index:28;background:rgba(0,0,0,.35);display:none}
-.mback.o{display:block}
-.menu{position:absolute;bottom:calc(100% + 8px);left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));max-width:600px;margin:0 auto;background:var(--sheet);border:1px solid var(--line);border-radius:14px;box-shadow:0 -6px 28px var(--shadow);padding:8px;max-height:min(70dvh,560px);overflow:auto;overscroll-behavior:contain}
-.menu[hidden]{display:none}
-#mmenu a{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:6px 14px;border-radius:10px;text-decoration:none;color:var(--ink)}
-#mmenu a+a{margin-top:4px}
-#mmenu a b{font:700 18px "AmiriM","Amiri",serif}
-#mmenu a small{font:13px system-ui,"Segoe UI",sans-serif;color:var(--muted)}
-#mmenu a.cur{background:var(--accent);color:var(--sheet)}
-#mmenu a.cur small{color:var(--sheet);opacity:.85}
-.rvall{width:100%;min-height:46px;margin-bottom:6px;border-radius:10px;font:700 16px "AmiriM","Amiri",serif}
-.rvall small{font:12px system-ui,sans-serif;opacity:.8;margin-inline-start:6px}
-.rvrow{display:grid;grid-template-columns:5.4em 1fr 1fr;gap:6px;align-items:center;margin:5px 0}
-.rvrow span{font:700 15px "AmiriM","Amiri",serif;color:var(--muted)}
-.rvrow button{min-height:42px;border-radius:10px;font:17px "AmiriM","Amiri",serif}
-.rvmenu button.cur{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
-.rvmenu .rvm{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font:15px system-ui,"Segoe UI",sans-serif;position:sticky;bottom:-8px;background:var(--sheet)}
-.drawer{display:flex;flex-direction:column;overflow:hidden!important;width:min(92vw,380px)!important}
-.drawer>.dh,.drawer>.dtabs{flex:0 0 auto}
-#paneS,#paneJ{flex:1 1 auto;overflow:auto;min-height:0;display:flex;flex-direction:column}
-#paneS[hidden],#paneJ[hidden]{display:none}
-#paneS>ol,#paneJ>ol{overflow:visible}
-#dq{flex:0 0 auto;position:sticky;top:0;z-index:1}
-.dtabs{display:flex;gap:6px;padding:10px 12px 4px}
-.dtabs button{flex:1;min-height:40px;border-radius:10px;font:700 15px system-ui,"Segoe UI",sans-serif}
-.dtabs button[aria-selected="true"]{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
-#dq{display:block;width:calc(100% - 24px);margin:8px 12px;padding:9px 12px;font:16px system-ui,"Segoe UI",sans-serif;border:1px solid var(--line);border-radius:10px;background:var(--leaf);color:var(--ink)}
-#dnone{padding:0 14px}
-#djuz{list-style:none;margin:0;padding:6px 8px}
-#djuz button{width:100%;display:flex;gap:10px;align-items:center;text-align:right;border:0;background:none;border-radius:8px;min-height:50px;padding:0 8px;font:19px "AmiriM","Amiri",serif}
-#djuz em{display:block;font:normal 13px system-ui,"Segoe UI",sans-serif;color:var(--muted)}
-#djuz .n{color:var(--muted);font:13px system-ui,sans-serif;min-width:2.2em;text-align:center}
-#djuz small{margin-inline-start:auto;font:12px system-ui,sans-serif;color:var(--muted)}
-#djuz button.cur{background:color-mix(in srgb,var(--accent) 14%,transparent);font-weight:700}
 .w.hl.rv0{background:transparent!important;box-shadow:none!important;border-bottom:1px dotted rgba(140,120,60,.45)}
 .w.hl.rv1{box-shadow:inset 0 -2px 0 rgba(160,110,0,.55)}
 .sec.rv{border:1.5px solid var(--accent);border-radius:12px;padding:10px 12px;background:rgba(0,0,0,.025)}
