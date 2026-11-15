@@ -36,7 +36,7 @@ function lineHTML(t,size,text,p,li,mk){
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(w)+'</span>':red(w);
-    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
+    return '<span class="w hl'+f+(c>=0?' k':'')+(c>=0&&D.com[c]&&D.com[c].zh?' zn':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(w)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
   const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
@@ -88,10 +88,10 @@ function open_(c,el){
     const tv=m.tt?verses(m.tt):'<p class="none">لا شاهد</p>';
     tail='<div class="sec"><h2>طيبة النشر'+(m.tn?' <span class="num">البيت '+esc(m.tn)+'</span>':'')+'</h2>'+tv+'</div>';
   } else {
-    const sh=m.st?verses(m.st):'<p class="none">'+esc(m.ns||'لا شاهد')+'</p>';
-    const du=m.dt?verses(m.dt):'<p class="none">'+esc(m.nd||'لا شاهد')+'</p>';
-    tail='<div class="sec"><h2>الشاطبية'+(m.sn?' <span class="num">البيت '+esc(m.sn)+'</span>':'')+'</h2>'+sh+'</div>'
-     +'<div class="sec"><h2>الدرة'+(m.dn?' <span class="num">البيت '+esc(m.dn)+'</span>':'')+'</h2>'+du+'</div>';
+    const sh=m.st?verses(m.st):(m.sx?verses(m.sx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.ns||'لا شاهد')+'</p>');
+    const du=m.dt?verses(m.dt):(m.dx?verses(m.dx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.nd||'لا شاهد')+'</p>');
+    tail='<div class="sec"><h2>الشاطبية'+((m.sn||m.sxn)?' <span class="num">البيت '+esc(m.sn||m.sxn)+'</span>':'')+'</h2>'+sh+'</div>'
+     +'<div class="sec"><h2>الدرة'+((m.dn||m.dxn)?' <span class="num">البيت '+esc(m.dn||m.dxn)+'</span>':'')+'</h2>'+du+'</div>';
   }
   let zth='';
   if(CFG.kind==='kubra'&&m.zh){
@@ -101,6 +101,7 @@ function open_(c,el){
   }
   const tjh=m.tj?'<div class="sec"><h2>توجيه القراءة <span class="num">حجة القراءات لابن زنجلة'+(m.tp?' — ص '+esc(m.tp):'')+'</span></h2>'+(m.tjs&&m.tjs.length&&m.rs?'<div class="tjl">'+m.tjs.slice().sort((a,b)=>a.i-b.i).map(x=>{const r=m.rs[x.i-1];return '<div class="tji"><div class="tjw"><span class="tjn">'+(x.i).toLocaleString('ar-EG')+'</span>'+(r?esc(r.w):'')+(r&&r.who?' <span class="tjwho">'+esc(r.who)+'</span>':'')+'</div><p class="tj">'+esc(x.t)+'</p></div>'}).join('')+'</div>':'<p class="tj">'+esc(m.tj)+'</p>')+'</div>':'';
   $('sin').innerHTML='<div class="sh-top"><div class="sh-w">'+el.innerHTML+'</div><button id="cl" aria-label="إغلاق">إغلاق</button></div>'
+   +rivCard(m)
    +(m.r||m.rs?'<div class="sec"><h2>القراءات'+(m.hd?' <span class=num>الهادي لمحيسن'+(m.hb?' — '+esc(m.hb):'')+'</span>':'')+'</h2>'+rdHTML(m)+'</div>':'')+(m.r||m.tt?tail:'')+zth+tjh;
   showSheet(); $('cl').onclick=()=>close_(); $('cl').focus();
 }
@@ -212,8 +213,75 @@ $('leaf').addEventListener('touchstart',e=>{x0=(innerWidth-e.touches[0].clientX)
 $('leaf').addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>70)render(dx>0?cur+1:cur-1)},{passive:true});
 window.addEventListener('hashchange',()=>{const m=/^#p-(\d+)$/.exec(location.hash); if(m&&+m[1]!==cur) render(+m[1])});
 try{ if('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(()=>{}) }catch(e){}
+
+const RW=['Q','W','B','QN','DA','S','H','DZ','SH','HF','KH','KD','AH','DK','IW','IJ','RW','RH','IS','ID'];
+const RWN={Q:'قالون',W:'ورش',B:'البزي',QN:'قنبل',DA:'الدوري عن أبي عمرو',S:'السوسي',H:'هشام',DZ:'ابن ذكوان',SH:'شعبة',HF:'حفص',KH:'خلف عن حمزة',KD:'خلاد',AH:'أبو الحارث',DK:'الدوري عن الكسائي',IW:'ابن وردان',IJ:'ابن جماز',RW:'رويس',RH:'روح',IS:'إسحاق',ID:'إدريس'};
+const IMAMS=[['نافع',['Q','W']],['ابن كثير',['B','QN']],['أبو عمرو',['DA','S']],['ابن عامر',['H','DZ']],['عاصم',['SH','HF']],['حمزة',['KH','KD']],['الكسائي',['AH','DK']],['أبو جعفر',['IW','IJ']],['يعقوب',['RW','RH']],['خلف العاشر',['IS','ID']]];
+const ASL={IW:['Q','W'],IJ:['Q','W'],RW:['DA','S'],RH:['DA','S'],IS:['KH','KD'],ID:['KH','KD']};
+const ASLN={IW:'نافع',IJ:'نافع',RW:'أبي عمرو',RH:'أبي عمرو',IS:'حمزة',ID:'حمزة'};
+let RIW='',RMODE='diff';
+try{RIW=localStorage.getItem('mushaf-riw')||'';RMODE=localStorage.getItem('mushaf-rmode')||'diff'}catch(e){}
+const rivOn=()=>CFG.kind==='sughra'&&!!RIW;
+const rbit=c=>1<<RW.indexOf(c);
+function linesOf(m,code){ if(!m||!m.rv) return null; const b=rbit(code),L=[]; m.rv.forEach((x,j)=>{ if(x&b) L.push(j) }); return L }
+const sameL=(a,b)=>!!a&&!!b&&a.length===b.length&&a.every((x,i)=>x===b[i]);
+function rivDiff(m){ const a=linesOf(m,RIW); if(a===null) return true; return !sameL(a,linesOf(m,'HF')) }
+function rvCls(c){
+  if(!rivOn()||c<0) return '';
+  const m=D.com[c]; if(!m||!m.rv) return '';
+  const d=rivDiff(m);
+  if(RMODE==='diff'&&RIW!=='HF') return d?' rv1':' rv0';
+  return d?' rv1':'';
+}
+function sevenSame(m){ const f=linesOf(m,RW[0]); return RW.slice(1,14).every(r=>sameL(linesOf(m,r),f)) }
+function rivShahid(m,L){
+  const i=RW.indexOf(RIW);
+  const shat=(lab)=> (m.st||m.sx)?'<div class="rvs"><span class="num">'+lab+((m.sn||m.sxn)?' — البيت '+esc(m.sn||m.sxn):'')+'</span>'+verses(m.st||m.sx)+(!m.st&&m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':'')+'</div>':'';
+  if(i<14){
+    const s=shat('الشاطبية'); if(s) return s;
+    if(sevenSame(m)) return '<p class="none">لم يختلف رواة الشاطبية في هذه الكلمة.</p>';
+    return '<p class="none">شاهد الشاطبية لهذه الكلمة لم يُضَف بعد.</p>';
+  }
+  const A0=ASL[RIW];
+  if(A0&&sameL(linesOf(m,A0[0]),linesOf(m,A0[1]))&&sameL(linesOf(m,A0[0]),L)){
+    const s=shat('شاهد الأصل من الشاطبية');
+    return '<p class="asl">سكتت عنه الدرة فهو على أصله: قرأ كقراءة '+ASLN[RIW]+'.</p>'+(s||(sevenSame(m)?'':'<p class="none">شاهد الشاطبية لهذه الكلمة لم يُضَف بعد.</p>'));
+  }
+  if(m.dt||m.dx) return '<div class="rvs"><span class="num">الدرة'+((m.dn||m.dxn)?' — البيت '+esc(m.dn||m.dxn):'')+'</span>'+verses(m.dt||m.dx)+(!m.dt&&m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':'')+'</div>';
+  const A=ASL[RIW]; if(A&&A.some(a=>sameL(linesOf(m,a),L))){
+    const s=shat('شاهد الأصل من الشاطبية');
+    return '<p class="asl">سكتت عنه الدرة فهو على أصله: قرأ كقراءة '+ASLN[RIW]+'.</p>'+(s||(sevenSame(m)?'':'<p class="none">شاهد الشاطبية لهذه الكلمة لم يُضَف بعد.</p>'));
+  }
+  if(m.dz) return '<p class="none">لم يذكره ناظم الدرة نصاً، والمعتمد هنا نص المصحف الأصلي.</p>';
+  return '<p class="none">شاهد الدرة لهذه الكلمة لم يُضَف بعد.</p>';
+}
+function rivCard(m){
+  if(!rivOn()||!m.rv) return '';
+  const L=linesOf(m,RIW), kh=m.rk&&(m.rk&rbit(RIW));
+  let h='<div class="sec rv"><h2>رواية '+RWN[RIW]+(kh?' <span class="num">له وجهان</span>':'')+'</h2>';
+  if(!L.length) h+='<p class="rd1">يقرأ هنا كما هو مرسوم في المصحف، لا خلاف له في هذه الكلمة.</p>';
+  else h+=L.map(j=>'<div class="rvl">'+(L.length>1?'<span class="tjn">'+AR(j+1)+'</span>':'')+rdItem({w:m.rs[j].w,how:m.rs[j].how})+'</div>').join('');
+  if(m.rc) h+='<p class="asl">يختلف حكمه بين الوصل والابتداء كما هو مبيَّن.</p>';
+  h+=rivShahid(m,L);
+  const T=(m.tjs||[]).filter(x=>L.includes(x.i-1));
+  if(T.length) h+='<div class="rvt"><span class="num">توجيه قراءته — ابن زنجلة</span>'+T.map(x=>'<p class="tj">'+esc(x.t)+'</p>').join('')+'</div>';
+  else if(L.length&&m.tj) h+='<p class="none">لم يذكر ابن زنجلة توجيهاً خاصاً بهذه القراءة.</p>';
+  return h+'</div>';
+}
+function buildRiv(){
+  const box=$('rvbox'); if(!box) return;
+  if(CFG.kind!=='sughra'){ box.innerHTML='<h3 class="dh3">الرواية</h3><p class="rvnote">اختيار الرواية متاح الآن في مصحف الصغرى، وسيأتي في الكبرى بعد ضبط أوجه الطيبة.</p>'; return }
+  box.innerHTML='<h3 class="dh3">الرواية</h3><select id="rvsel" aria-label="اختر الرواية"><option value="">بلا رواية — كل مواضع الخلاف</option>'
+   +IMAMS.map(([n,rs])=>'<optgroup label="'+n+'">'+rs.map(r=>'<option value="'+r+'">'+RWN[r]+'</option>').join('')+'</optgroup>').join('')+'</select>'
+   +'<div class="rvm" role="radiogroup"><label><input type="radio" name="rvm" value="diff"> مواضع مخالفة حفص فقط</label><label><input type="radio" name="rvm" value="all"> كل مواضع الخلاف</label></div>';
+  const sel=$('rvsel'); sel.value=RIW;
+  box.querySelectorAll('input[name=rvm]').forEach(x=>{ x.checked=x.value===RMODE; x.onchange=()=>{ RMODE=x.value; try{localStorage.setItem('mushaf-rmode',RMODE)}catch(e){}; render(cur) } });
+  const sync=()=>{ box.querySelector('.rvm').style.display=(RIW&&RIW!=='HF')?'':'none' }; sync();
+  sel.onchange=()=>{ RIW=sel.value; try{localStorage.setItem('mushaf-riw',RIW)}catch(e){}; sync(); render(cur) };
+}
+
 function start(){
-  buildDrawer();
+  buildDrawer(); buildRiv();
   let p=1;const m=/^#p-(\d+)$/.exec(location.hash);
   if(m) p=+m[1]; else try{p=+localStorage.getItem('mushaf-page')||1}catch(e){}
   render(p);

@@ -146,3 +146,15 @@ html[data-kind="kubra"]{--accent:#1b5e58;--frame:#1b5e58;--frame2:#5fae9f;--bar:
 @media (prefers-color-scheme: dark){html[data-kind="kubra"]:not([data-theme="light"]){--accent:#6fd0c0;--frame:#4ea294;--frame2:#2f6b61;--bar:#101a18}}
 html[data-kind="kubra"] .mushafs a.cur{border-color:var(--accent)}
 .ld{padding:40px 16px;text-align:center;color:var(--muted);font:15px system-ui,sans-serif}
+
+.w.hl.rv0{background:transparent!important;box-shadow:none!important;border-bottom:1px dotted rgba(140,120,60,.45)}
+.w.hl.rv1{box-shadow:inset 0 -2px 0 rgba(160,110,0,.55)}
+.sec.rv{border:1.5px solid var(--accent);border-radius:12px;padding:10px 12px;background:rgba(0,0,0,.025)}
+.sec.rv .rvl{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:20px;line-height:1.9;margin:2px 0}
+.sec.rv .rvs,.sec.rv .rvt{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.sec.rv .num{display:inline-block;margin-bottom:4px}
+.asl{margin:8px 0 0;font-size:16px;color:var(--accent)}
+#rvbox{padding:0 14px 6px}
+#rvbox select{width:100%;font:inherit;font-size:16px;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--bg,#fff);color:inherit}
+.rvm{display:flex;flex-direction:column;gap:6px;margin-top:8px;font-size:15px}
+.rvnote{font-size:14px;color:var(--muted);margin:4px 0}
