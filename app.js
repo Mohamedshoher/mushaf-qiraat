@@ -365,6 +365,6 @@ function start(){
   if(m) p=+m[1]; else try{p=+localStorage.getItem('mushaf-page')||1}catch(e){}
   render(p);
 }
-Promise.all([fetch('data/pages.json').then(r=>r.json()),fetch(CFG.data).then(r=>r.json())])
+Promise.all([fetch('data/pages.json',{cache:'no-cache'}).then(r=>r.json()),fetch(CFG.data,{cache:'no-cache'}).then(r=>r.json())])
  .then(([a,b])=>{ D=Object.assign({},a,b); $('txt').innerHTML=''; start(); })
  .catch(()=>{ $('txt').innerHTML='<p class="ld">تعذّر تحميل المصحف. تحقّق من الاتصال ثم أعد فتح الصفحة.</p>' });
