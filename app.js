@@ -3,7 +3,7 @@ let D=null; const CFG=window.MUSHAF||{kind:'sughra',data:'data/sughra.json'};
 const $=id=>document.getElementById(id);
 const AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const red=s=>esc(s).replace(/\u0001/g,'<span class="r">').replace(/[\u0002\u0004]/g,'</span>').replace(/\u0003/g,'<span class="gh">');
+const red=s=>esc(s).replace(/(\u06DD[\u0660-\u0669]+)/g,'<span class="ayn">$1</span>').replace(/\u0001/g,'<span class="r">').replace(/[\u0002\u0004]/g,'</span>').replace(/\u0003/g,'<span class="gh">');
 const MKS='[\\u064B-\\u065F\\u0670\\u06D6-\\u06ED\\u08D3-\\u08FF]';
 const RE_GH=new RegExp('^(\\u0001?)([\u0644\u0631])('+MKS+'*)');
 function ghn(prev,w){
