@@ -88,7 +88,7 @@ function open_(c,el){
   let tail='';
   if(CFG.kind==='kubra'){
     const tv=m.tt?verses(m.tt):'<p class="none">لا شاهد</p>';
-    tail='<div class="sec"><h2>طيبة النشر'+(m.tn?' <span class="num">البيت '+esc(m.tn)+'</span>':'')+'</h2>'+tv+'</div>';
+    tail='<div class="sec"><h2>طيبة النشر'+(m.tn?' <span class="num">البيت '+esc(m.tn)+(m.tf?' — '+esc(m.tf):'')+'</span>':'')+'</h2>'+tv+'</div>';
   } else {
     const sh=m.st?verses(m.st):(m.sx?verses(m.sx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.ns||'لا شاهد')+'</p>');
     const du=m.dt?verses(m.dt):(m.dx?verses(m.dx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.nd||'لا شاهد')+'</p>');
