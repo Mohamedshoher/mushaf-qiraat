@@ -87,8 +87,15 @@ function open_(c,el){
   const m=D.com[c]; if(!m) return;
   let tail='';
   if(CFG.kind==='kubra'){
-    const tv=m.tt?verses(m.tt):'<p class="none">لا شاهد</p>';
-    tail='<div class="sec"><h2>طيبة النشر'+(m.tn?' <span class="num">البيت '+esc(m.tn)+(m.tf?' — '+esc(m.tf):'')+'</span>':'')+'</h2>'+tv+'</div>';
+    if(m.tt||!(m.st||m.sx||m.dt||m.dx)){
+      const tv=m.tt?verses(m.tt):'<p class="none">لا شاهد</p>';
+      tail='<div class="sec"><h2>طيبة النشر'+(m.tn?' <span class="num">البيت '+esc(m.tn)+(m.tf?' — '+esc(m.tf):'')+'</span>':'')+'</h2>'+tv+'</div>';
+    } else {
+      const sh=m.st||m.sx, du=m.dt||m.dx;
+      tail=(sh?'<div class="sec"><h2>الشاطبية'+((m.sn||m.sxn)?' <span class="num">البيت '+esc(m.sn||m.sxn)+'</span>':'')+'</h2>'+verses(sh)+(!m.st&&m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':'')+'</div>':'')
+       +(du?'<div class="sec"><h2>الدرة'+((m.dn||m.dxn)?' <span class="num">البيت '+esc(m.dn||m.dxn)+'</span>':'')+'</h2>'+verses(du)+'</div>':'')
+       +'<p class="none">لا بيت لها في طيبة النشر؛ الدليل من الشاطبية أو الدرة.</p>';
+    }
   } else {
     const sh=m.st?verses(m.st):(m.sx?verses(m.sx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.ns||'لا شاهد')+'</p>');
     const du=m.dt?verses(m.dt):(m.dx?verses(m.dx)+(m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':''):'<p class="none">'+esc(m.nd||'لا شاهد')+'</p>');
