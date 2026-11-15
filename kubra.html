@@ -28,16 +28,17 @@
 </div>
 <div class="back" id="back"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="قراءات الكلمة"><div class="in" id="sin"></div></div>
-<aside class="drawer" id="drawer" aria-label="القائمة الجانبية" aria-hidden="true">
-  <div class="dh"><b>المصحف</b><button id="dclose">إغلاق</button></div>
-  <nav class="mushafs">
-    <a href="index.html" data-h="index.html" data-k="sughra">القراءات العشر الصغرى<small>شواهدها من الشاطبية والدرة</small></a>
-    <a href="kubra.html" data-h="kubra.html" data-k="kubra">القراءات العشر الكبرى<small>شواهدها من طيبة النشر</small></a>
-  </nav>
-  <div id="rvbox"></div>
-  <h3 class="dh3">السور</h3>
-  <ol id="dsurahs"></ol>
+<aside class="drawer" id="drawer" aria-label="فهرس المصحف" aria-hidden="true">
+  <div class="dh"><b>الفهرس</b><button id="dclose">إغلاق</button></div>
+  <div class="dtabs" role="tablist"><button role="tab" id="tabS" aria-selected="true" aria-controls="paneS">السور</button><button role="tab" id="tabJ" aria-selected="false" aria-controls="paneJ">الأجزاء</button></div>
+  <div id="paneS" role="tabpanel"><input id="dq" type="search" placeholder="ابحث باسم السورة أو رقمها" aria-label="بحث في أسماء السور" autocomplete="off"><ol id="dsurahs"></ol><p id="dnone" class="rvnote" hidden>لا توجد سورة بهذا الاسم.</p></div>
+  <div id="paneJ" role="tabpanel" hidden><ol id="djuz"></ol></div>
 </aside>
+<nav class="bot" id="bot" aria-label="المصحف والرواية"><div class="botin">
+  <div class="seg"><a href="index.html" data-h="index.html" data-k="sughra">العشر الصغرى</a><a href="kubra.html" data-h="kubra.html" data-k="kubra">العشر الكبرى</a></div>
+  <button id="rvbtn" class="rvbtn" aria-haspopup="dialog"><small>الرواية</small><b id="rvlab">بلا رواية</b></button>
+</div></nav>
+<div class="rvpop" id="rvpop" role="dialog" aria-modal="true" aria-label="اختيار الرواية"><div class="rvpan" id="rvpan"></div></div>
 <script src="app.js"></script>
 </body>
 </html>
