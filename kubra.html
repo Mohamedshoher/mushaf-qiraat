@@ -34,11 +34,17 @@
   <div id="paneS" role="tabpanel"><input id="dq" type="search" placeholder="ابحث باسم السورة أو رقمها" aria-label="بحث في أسماء السور" autocomplete="off"><ol id="dsurahs"></ol><p id="dnone" class="rvnote" hidden>لا توجد سورة بهذا الاسم.</p></div>
   <div id="paneJ" role="tabpanel" hidden><ol id="djuz"></ol></div>
 </aside>
+<div class="mback" id="mback"></div>
 <nav class="bot" id="bot" aria-label="المصحف والرواية"><div class="botin">
-  <div class="seg"><a href="index.html" data-h="index.html" data-k="sughra">العشر الصغرى</a><a href="kubra.html" data-h="kubra.html" data-k="kubra">العشر الكبرى</a></div>
-  <button id="rvbtn" class="rvbtn" aria-haspopup="dialog"><small>الرواية</small><b id="rvlab">بلا رواية</b></button>
-</div></nav>
-<div class="rvpop" id="rvpop" role="dialog" aria-modal="true" aria-label="اختيار الرواية"><div class="rvpan" id="rvpan"></div></div>
+  <button id="mbtn" class="dd" aria-haspopup="menu" aria-expanded="false" aria-controls="mmenu"><small>المصحف</small><b id="mlab">العشر الصغرى</b><i aria-hidden="true">▴</i></button>
+  <button id="rvbtn" class="dd" aria-haspopup="menu" aria-expanded="false" aria-controls="rvmenu"><small>الرواية</small><b id="rvlab">بلا رواية</b><i aria-hidden="true">▴</i></button>
+</div>
+<div class="menu" id="mmenu" role="menu" hidden>
+  <a role="menuitem" href="index.html" data-h="index.html" data-k="sughra"><b>العشر الصغرى</b><small>الشاطبية والدرة</small></a>
+  <a role="menuitem" href="kubra.html" data-h="kubra.html" data-k="kubra"><b>العشر الكبرى</b><small>طيبة النشر</small></a>
+</div>
+<div class="menu rvmenu" id="rvmenu" role="menu" hidden></div>
+</nav>
 <script src="app.js"></script>
 </body>
 </html>
