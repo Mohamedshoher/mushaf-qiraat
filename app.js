@@ -37,6 +37,7 @@ function lineHTML(t,size,text,p,li,mk){
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
+    if(CFG.kind==='kubra'&&!srcShow(c)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
     return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
@@ -92,6 +93,27 @@ function srcLine(m){
   if(m.tj) s.push('التوجيه: ابن زنجلة');
   return s.length?'<p class="srcl">المصدر: '+s.map(esc).join(' · ')+'</p>':'';
 }
+
+const SRCN={T:'تحبير التيسير',H:'الهادي لمحيسن',Z:'زيادات منحة مولى البر'};
+let SRC={T:1,H:1,Z:1};
+try{ const s=JSON.parse(localStorage.getItem('mushaf-src')||'null'); if(s&&typeof s==='object') SRC=Object.assign(SRC,s) }catch(e){}
+function srcKeys(m){ const k=[]; if(!m) return k; if(m.hd) k.push('H'); else if(m.r) k.push('T'); if(m.zh) k.push('Z'); if(!k.length) k.push('T'); return k }
+function srcShow(c){ if(c<0) return SRC.T&&SRC.H&&SRC.Z; return srcKeys(D.com[c]).some(k=>SRC[k]) }
+function srcPanel(){
+  const cnt={T:0,H:0,Z:0};
+  Object.values(D.hl).forEach(pg=>Object.values(pg).forEach(c=>{ if(c>=0) srcKeys(D.com[c]).forEach(k=>cnt[k]++) }));
+  const all=SRC.T&&SRC.H&&SRC.Z;
+  $('srcpan').innerHTML='<div class="rvh"><b>اختر المصادر</b><button class="rvx">تم</button></div>'
+   +'<button class="rvall'+(all?' cur':'')+'" data-a="1">الكل</button>'
+   +Object.keys(SRCN).map(k=>'<label class="srcrow"><input type="checkbox" data-k="'+k+'"'+(SRC[k]?' checked':'')+'> <span>'+SRCN[k]+'</span> <small>'+cnt[k].toLocaleString('ar-EG')+' موضع</small></label>').join('')
+   +'<p class="rvnote">يظهر التظليل للمصادر المحددة فقط؛ والكلمة التي لها أكثر من مصدر تظهر إن اختير أحدها.</p>';
+  const ap=()=>{ try{localStorage.setItem('mushaf-src',JSON.stringify(SRC))}catch(e){}; render(cur); srcPanel() };
+  $('srcpan').querySelector('.rvall').onclick=()=>{ SRC={T:1,H:1,Z:1}; ap() };
+  $('srcpan').querySelectorAll('input[data-k]').forEach(x=>x.onchange=()=>{ SRC[x.dataset.k]=x.checked?1:0; if(!SRC.T&&!SRC.H&&!SRC.Z) SRC[x.dataset.k]=1; ap() });
+  $('srcpan').querySelector('.rvx').onclick=closeSrc;
+}
+function openSrc(){ srcPanel(); $('srcpop').classList.add('o') }
+function closeSrc(){ $('srcpop').classList.remove('o'); $('tg').focus() }
 function open_(c,el){
   const m=D.com[c]; if(!m) return;
   let tail='';
@@ -236,6 +258,7 @@ document.addEventListener('touchend',e=>{
   if(Math.abs(dy)>Math.abs(dx)) return;
   if(ed&&dx<-50) showDrawer(); else if(drOpen&&dx>60) closeDrawer();
 },{passive:true});
+if(CFG.kind==='kubra'){ $('leaf').classList.add('on'); $('tg').onclick=openSrc; } else
 $('tg').onclick=()=>{const on=!$('leaf').classList.contains('on'); $('leaf').classList.toggle('on',on); $('tg').classList.toggle('on',on); $('tg').setAttribute('aria-pressed',on)};
 let x0=null;
 $('leaf').addEventListener('touchstart',e=>{x0=(innerWidth-e.touches[0].clientX)<=26?null:e.touches[0].clientX},{passive:true});
@@ -385,3 +408,5 @@ function start(){
 Promise.all([fetch('data/pages.json',{cache:'no-cache'}).then(r=>r.json()),fetch(CFG.data,{cache:'no-cache'}).then(r=>r.json())])
  .then(([a,b])=>{ D=Object.assign({},a,b); $('txt').innerHTML=''; start(); })
  .catch(()=>{ $('txt').innerHTML='<p class="ld">تعذّر تحميل المصحف. تحقّق من الاتصال ثم أعد فتح الصفحة.</p>' });
+
+if($('srcpop')){ $('srcpop').addEventListener('click',e=>{ if(e.target===$('srcpop')) closeSrc() }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('srcpop').classList.contains('o')) closeSrc() }) }

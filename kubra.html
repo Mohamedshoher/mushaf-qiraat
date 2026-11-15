@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="مصحف القراءات">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css?v=35">
+<link rel="stylesheet" href="style.css?v=36">
 <script>window.MUSHAF={kind:'kubra',data:'data/kubra.json'}</script>
 </head>
 <body>
@@ -22,7 +22,7 @@
     <input id="pg" type="number" inputmode="numeric" min="1" max="604" aria-label="رقم الصفحة"><span class="of">/٦٠٤</span>
     <button id="nx" class="ic" aria-label="الصفحة التالية"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
     <button id="sb" class="ic" aria-label="بحث في المصحف" title="بحث"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></button>
-    <button id="tg" class="ic on" aria-pressed="true" aria-label="التظليل" title="التظليل"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h8M14.5 4.5l5 5-8 8-5-1-1-5z"/></svg></button>
+    <button id="tg" class="ic on" aria-pressed="true" aria-label="المصادر" title="اختيار المصادر"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5"/></svg></button>
   </div>
   <div class="leaf on" id="leaf"><div class="txt" id="txt"><p class="ld">جارٍ التحميل…</p></div></div>
 </div>
@@ -38,7 +38,8 @@
   <div class="seg"><a href="index.html" data-h="index.html" data-k="sughra">العشر الصغرى</a><a href="kubra.html" data-h="kubra.html" data-k="kubra">العشر الكبرى</a></div>
   <button id="rvbtn" class="rvbtn" aria-haspopup="dialog"><small>الرواية</small><b id="rvlab">بلا رواية</b></button>
 </div></nav>
+<div class="rvpop" id="srcpop" role="dialog" aria-modal="true" aria-label="اختيار المصادر"><div class="rvpan" id="srcpan"></div></div>
 <div class="rvpop" id="rvpop" role="dialog" aria-modal="true" aria-label="اختيار الرواية"><div class="rvpan" id="rvpan"></div></div>
-<script src="app.js?v=35"></script>
+<script src="app.js?v=36"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const V='mushaf-v35', CORE=['./','index.html','kubra.html','style.css','app.js','amiri_sub.woff2','kf.otf','manifest.webmanifest','icon-192.png','icon-512.png','data/pages.json'];
+const V='mushaf-v36', CORE=['./','index.html','kubra.html','style.css','app.js','amiri_sub.woff2','kf.otf','manifest.webmanifest','icon-192.png','icon-512.png','data/pages.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 // الصفحات والشيفرة والأنماط: الشبكة أولاً حتى لا يختلط ملف قديم بصفحة جديدة؛ والباقي من الذاكرة أولاً
