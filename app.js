@@ -39,6 +39,7 @@ function lineHTML(t,size,text,p,li,mk){
     const f=mk[li+':'+wi]?' fd':'';
     if(c===undefined) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
     if(CFG.kind==='kubra'&&!srcShow(c)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
+    if(c>=0&&D.com[c]&&D.com[c].so&&!(rivOn()&&RIW===D.com[c].so)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
     return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
   }).join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
@@ -341,6 +342,7 @@ function rvCls(c){
 }
 function sevenSame(m){ const f=linesOf(m,RW[0]); return RW.slice(1,14).every(r=>sameL(linesOf(m,r),f)) }
 function rivShahid(m,L){
+  if(m.so) return '<p class="none">مصدر هذا الوجه جداول توفيق ضمرة في رواية شعبة؛ شاهد الشاطبية لم يُضَف بعد.</p>';
   const i=RW.indexOf(RIW);
   const shat=(lab)=> (m.st||m.sx)?'<div class="rvs"><span class="num">'+lab+((m.sn||m.sxn)?' — البيت '+esc(m.sn||m.sxn):'')+'</span>'+verses(m.st||m.sx)+(!m.st&&m.gq?'<p class="none">شاهد مُستكمَل يحتاج مراجعة</p>':'')+'</div>':'';
   if(i<14){
