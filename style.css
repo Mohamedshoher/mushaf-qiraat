@@ -214,3 +214,17 @@ body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
 .lgv .leaf{width:min(100%,760px)}
 .lgrp{margin-bottom:3.2cqw}
 .ln.lg{white-space:nowrap}
+
+/* تحديد كلمة والسؤال عنها */
+#txt{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.q{cursor:pointer;border-radius:.18em}
+.qsel{background:rgba(27,122,58,.22);box-shadow:0 0 0 2px #1b7a3a;border-radius:.18em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.qbar{position:fixed;left:50%;bottom:calc(60px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);width:min(94vw,520px);z-index:8;background:var(--sheet);border:2px solid var(--frame);border-radius:14px;box-shadow:0 8px 26px var(--shadow);padding:10px 12px;display:flex;align-items:center;gap:10px;justify-content:space-between;transition:transform .2s;direction:rtl}
+.qbar.o{transform:translate(-50%,0)}
+.qt{font-size:16px;line-height:1.5;min-width:0}
+.qt b{font-size:19px;color:var(--accent)}
+.qb{display:flex;gap:6px;flex:none}
+.qb button{min-height:42px;border-radius:10px;font:700 14px system-ui,"Segoe UI",sans-serif;padding:0 12px}
+#qask{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
+.qtoast{position:fixed;left:50%;top:70px;transform:translate(-50%,-30px);opacity:0;pointer-events:none;background:#222;color:#fff;padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;z-index:30;transition:.25s}
+.qtoast.o{opacity:1;transform:translate(-50%,0)}

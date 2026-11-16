@@ -57,10 +57,12 @@ function lineHTML(t,size,text,p,li,mk){
     const wu=usulWrap(w,wi+1<parts.length?parts[wi+1]:nextWordOf(p,li));
     const c=hm[li+':'+wi];
     const f=mk[li+':'+wi]?' fd':'';
-    if(c===undefined) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
-    if(CFG.kind==='kubra'&&!srcShow(c)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
-    if(c>=0&&D.com[c]&&D.com[c].so&&!(rivOn()&&RIW===D.com[c].so)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
-    return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
+    const di=' data-i="'+li+':'+wi+'"';
+    const pl=()=>'<span class="q"'+di+'>'+(f?'<span class="fd">'+red(wu)+'</span>':red(wu))+'</span>';
+    if(c===undefined) return pl();
+    if(CFG.kind==='kubra'&&!srcShow(c)) return pl();
+    if(c>=0&&D.com[c]&&D.com[c].so&&!(rivOn()&&RIW===D.com[c].so)) return pl();
+    return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+di+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
   });
   const ws=wsA.join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
@@ -85,7 +87,7 @@ function render(p,q){
   $('pg').value=p;
   try{localStorage.setItem('mushaf-page',String(p))}catch(e){}
   try{ if(location.hash!=='#p-'+p){ try{history.replaceState(history.state,'','#p-'+p)}catch(e2){location.hash='p-'+p} } }catch(e){}
-  window.scrollTo({top:0});
+  window.scrollTo({top:0}); try{ qClear() }catch(e){}
   try{ if(D.surahs) markDrawer() }catch(e){}
 }
 function fmt(x){
@@ -454,4 +456,71 @@ if($('srcpop')){ $('srcpop').addEventListener('click',e=>{ if(e.target===$('srcp
   opts.forEach(([v,t])=>{ const b=document.createElement('button'); b.type='button'; b.dataset.v=v; b.textContent=t; g.appendChild(b) });
   g.addEventListener('click',e=>{ const b=e.target.closest('button[data-v]'); if(!b) return; VIEW=+b.dataset.v; try{localStorage.setItem('mushaf-view',String(VIEW))}catch(e2){} mark(); closeDrawer(()=>render(cur)) });
   mark();
+})();
+
+/* تحديد كلمة والسؤال عنها في Gemini */
+const ARD=t=>+t.replace(/[\u0660-\u0669]/g,c=>c.charCodeAt(0)-0x660);
+function ayahOf(p,li,wi){
+  const L=D.pages[p-1]; let hc=0; for(let i=0;i<li;i++) if(L[i][0]==='h') hc++;
+  let sIdx; if(hc>0){ const st=D.surahs.filter(x=>x[2]===p); sIdx=st[hc-1]?st[hc-1][0]:null } else { let k=null; D.surahs.forEach(x=>{ if(x[2]<p) k=x[0] }); sIdx=k||1 }
+  const scan=(txt,from)=>{ const t=txt.replace(/[\u0001-\u0004\u0005-\u0007]/g,'').split(' '); for(let j=from;j<t.length;j++){ const m=/\u06DD([\u0660-\u0669]+)/.exec(t[j]); if(m) return ARD(m[1]) } return null };
+  let a=scan(L[li][2],wi+1);
+  for(let i=li+1;a===null&&i<L.length;i++) if(L[i][0]!=='h') a=scan(L[i][2],0);
+  for(let q=p+1;a===null&&q<=Math.min(604,p+3);q++){ for(const l of D.pages[q-1]){ if(l[0]==='h') continue; a=scan(l[2],0); if(a!==null) break } }
+  return {s:sIdx,a:a};
+}
+let QSEL=null;
+function qClear(){ const o=document.querySelector('#txt .qsel'); if(o) o.classList.remove('qsel'); QSEL=null; const b=$('qbar'); if(b) b.classList.remove('o') }
+const BOOKS={
+  kubra:{mushaf:'مصحف القراءات العشر الكبرى (من طريق طيبة النشر)',book:'«فريدة الدهر في تأصيل وجمع القراءات»',where:'على المكتبة الشاملة: https://shamela.ws/book/29909'},
+  sughra:{mushaf:'مصحف القراءات العشر الصغرى (من طريقي الشاطبية والدرة)',book:'«البدور الزاهرة في القراءات العشر المتواترة من طريقي الشاطبية والدرة» للشيخ عبد الفتاح القاضي',where:'على المكتبة الشاملة (shamela.ws) — ابحث عن اسم الكتاب'}
+};
+function geminiPrompt(w,wp,sn,an,p){
+  const B=BOOKS[CFG.kind]||BOOKS.sughra;
+  return 'أحتاج خلاصة ما ورد في كتاب واحد محدّد عن كلمة قرآنية.\n\n'
+  +'الكلمة: «'+w+'» ('+wp+')\n'
+  +'موضعها: سورة '+sn+'، الآية '+an+' (صفحة '+p+' من '+B.mushaf+')\n\n'
+  +'الكتاب المطلوب: '+B.book+'\n'+B.where+'\n\n'
+  +'شروط صارمة:\n'
+  +'١. ابحث في هذا الكتاب وحده في المكتبة الشاملة، ولا تخرج عنه إلى كتاب آخر أو موقع آخر أو معلوماتك العامة.\n'
+  +'٢. لا تخمّن ولا تُكمل من عندك. إن لم تجد الكلمة أو الآية في الكتاب فقل صراحة: «لم أجد في الكتاب».\n'
+  +'٣. انقل النصوص المهمة بحروفها بين علامتي تنصيص، واذكر رقم الجزء والصفحة لكل نقل، وميّز المتن عن الحاشية.\n'
+  +'٤. إن كان في الكتاب أكثر من موضع للكلمة نفسها (في سورة أخرى) فلا تخلطها بهذا الموضع.\n\n'
+  +'المطلوب في الجواب:\n'
+  +'أ) مذاهب القرّاء في الكلمة: من قرأ بماذا (القراء أو الرواة، ومن قرأ بالوجه الآخر).\n'
+  +'ب) الرواة والطرق إن ذكرها الكتاب، وما فيه من خلاف أو تحرير.\n'
+  +'ج) الشاهد (بيت الشاطبية أو الدرة أو الطيبة) إن ذكره الكتاب.\n'
+  +'د) التوجيه إن ذُكر.\n'
+  +'هـ) النصوص المنقولة مع أرقام الصفحات.';
+}
+function qSelect(el){
+  const t=el.textContent.replace(/[\u0001-\u0007]/g,'').trim();
+  if(!t||/\u06DD/.test(t)) return;
+  qClear(); QSEL=el; el.classList.add('qsel');
+  const [li,wi]=el.dataset.i.split(':').map(Number);
+  const ay=ayahOf(cur,li,wi), sr=D.surahs.find(x=>x[0]===ay.s);
+  QSEL={el,t,p:plain(t.replace(/[\u0001-\u0007]/g,'')),sn:sr?plain(sr[1]):'؟',an:ay.a||'؟'};
+  let b=$('qbar');
+  if(!b){ b=document.createElement('div'); b.id='qbar'; b.className='qbar'; b.setAttribute('role','dialog');
+    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qask" type="button">اسأل Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
+    document.body.appendChild(b);
+    $('qcl').onclick=qClear;
+    $('qask').onclick=()=>{ if(!QSEL) return; const q=QSEL, txt=geminiPrompt(q.t,q.p,q.sn,q.an,cur);
+      const done=()=>{ try{ qToast('نُسخ السؤال — الصقه في Gemini') }catch(e){} };
+      try{ navigator.clipboard.writeText(txt).then(done,()=>{ qFallback(txt); done() }) }catch(e){ qFallback(txt); done() }
+      window.open('https://gemini.google.com/app','_blank','noopener');
+    };
+  }
+  b.querySelector('.qt').innerHTML='<b>«'+esc(t)+'»</b> — سورة '+esc(String(QSEL.sn))+'، الآية '+esc(String(QSEL.an));
+  b.classList.add('o');
+}
+function qFallback(txt){ const a=document.createElement('textarea'); a.value=txt; a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(e){} a.remove() }
+function qToast(m){ let t=$('qtoast'); if(!t){ t=document.createElement('div'); t.id='qtoast'; t.className='qtoast'; document.body.appendChild(t) } t.textContent=m; t.classList.add('o'); clearTimeout(qToast.h); qToast.h=setTimeout(()=>t.classList.remove('o'),3500) }
+(function(){
+  const tx=$('txt'); let timer=null,lp=false,sx=0,sy=0;
+  tx.addEventListener('click',e=>{ if(lp){ lp=false; e.stopPropagation(); e.preventDefault(); return } const q=e.target.closest('.q'); if(q) qSelect(q) },true);
+  tx.addEventListener('pointerdown',e=>{ const w=e.target.closest('[data-i]'); if(!w) return; sx=e.clientX; sy=e.clientY; clearTimeout(timer); timer=setTimeout(()=>{ lp=true; qSelect(w) },520) });
+  const stop=()=>clearTimeout(timer);
+  tx.addEventListener('pointerup',stop); tx.addEventListener('pointercancel',stop); tx.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>10) stop() });
+  tx.addEventListener('contextmenu',e=>{ if(e.target.closest('[data-i]')) e.preventDefault() });
 })();
