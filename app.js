@@ -27,12 +27,32 @@ function prevWordOf(p,li){
 }
 function plain(n){return n.replace(/ٱ/g,'ا').replace(/ا\u0653/g,'آ').replace(/(^|\s)ال(?=[\u064B-\u0652]*\u0653)/g,'$1آل').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/ٱ/g,'ا').replace(/(^|\s)ءا/g,'$1آ')}
 let cur=1;
+let VIEW=0; try{ VIEW=+localStorage.getItem('mushaf-view')||0 }catch(e){}
+if(![0,2,3].includes(VIEW)) VIEW=0;
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{try{fitLines()}catch(e){}});
-function fitLines(){document.querySelectorAll('#txt .ln.j').forEach(e=>{if(e.dataset.b)e.style.fontSize=e.dataset.b+'cqw';const o=e.scrollWidth,w=e.clientWidth;if(o>w+1){e.style.fontSize=(parseFloat(e.style.fontSize)*w/o*0.995).toFixed(2)+'cqw'}})}
+function fitLines(){
+  document.querySelectorAll('#txt .ln.j, #txt .ln.lg').forEach(e=>{if(e.dataset.b)e.style.fontSize=e.dataset.b+'cqw';const o=e.scrollWidth,w=e.clientWidth;if(o>w+1){e.style.fontSize=(parseFloat(e.style.fontSize)*w/o*0.995).toFixed(2)+'cqw'}});
+  const g={};
+  document.querySelectorAll('#txt .ln.lg[data-g]').forEach(e=>{ const f=parseFloat(e.style.fontSize); if(!(g[e.dataset.g]<=f)) g[e.dataset.g]=f });
+  document.querySelectorAll('#txt .ln.lg[data-g]').forEach(e=>{ const f=g[e.dataset.g]; e.style.fontSize=f+'cqw'; e.style.lineHeight=e.style.height=(f*2.05).toFixed(2)+'cqw' });
+}
+function splitBal(parts,n){
+  const wt=parts.map(w=>(w.replace(/[\u0001-\u0004\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').length||1)+0.5);
+  const N=parts.length; if(n>N) n=N; if(n<=1) return [[0,N]];
+  const pre=[0]; wt.forEach(x=>pre.push(pre[pre.length-1]+x));
+  const sum=(a,b)=>pre[b]-pre[a];
+  let best=null,bs=1e9;
+  const rec=(cuts,start)=>{
+    if(cuts.length===n-1){ const b=[0,...cuts,N]; let mx=0,mn=1e9; for(let i=0;i<n;i++){const x=sum(b[i],b[i+1]); mx=Math.max(mx,x); mn=Math.min(mn,x)} const sc=mx*1000+(mx-mn); if(sc<bs){bs=sc;best=b} return }
+    for(let c=start;c<=N-(n-1-cuts.length);c++) rec([...cuts,c],c+1);
+  };
+  rec([],1);
+  return best.slice(0,-1).map((x,i)=>[x,best[i+1]]);
+}
 function lineHTML(t,size,text,p,li,mk){
   const hm=D.hl[p]||{}; mk=mk||{};
   const parts=text.split(' ');
-  const ws=parts.map((w0,wi)=>{
+  const wsA=parts.map((w0,wi)=>{
     const w=(t==='j'&&CFG.kind==='kubra')?ghn(wi>0?parts[wi-1]:prevWordOf(p,li),w0):w0;
     const wu=usulWrap(w,wi+1<parts.length?parts[wi+1]:nextWordOf(p,li));
     const c=hm[li+':'+wi];
@@ -41,8 +61,17 @@ function lineHTML(t,size,text,p,li,mk){
     if(CFG.kind==='kubra'&&!srcShow(c)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
     if(c>=0&&D.com[c]&&D.com[c].so&&!(rivOn()&&RIW===D.com[c].so)) return f?'<span class="fd">'+red(wu)+'</span>':red(wu);
     return '<span class="w hl'+f+(c>=0?' k':'')+rvCls(c)+'"'+(c>=0?' tabindex="0" role="button" data-c="'+c+'"':'')+'>'+red(wu)+'</span>';
-  }).join(' ');
+  });
+  const ws=wsA.join(' ');
   if(t==='h') return '<div class="ln h" style="font-size:5.7cqw"><span class="in">'+esc(plain(text.replace(/[\u0001\u0002]/g,'')))+'</span></div>';
+  if(VIEW&&t==='j'){
+    const sp=splitBal(parts,VIEW), f=(20.5/398*100*VIEW*0.97).toFixed(2);
+    return '<div class="lgrp">'+sp.map(([a,b])=>'<div class="ln j lg" data-g="'+li+'" data-b="'+f+'" style="font-size:'+f+'cqw;line-height:'+(f*2.05).toFixed(2)+'cqw;height:'+(f*2.05).toFixed(2)+'cqw">'+wsA.slice(a,b).join(' ')+'</div>').join('')+'</div>';
+  }
+  if(VIEW&&t!=='h'){
+    const f=(size/398*100*1.5).toFixed(2);
+    return '<div class="lgrp"><div class="ln '+t+' lg" data-g="'+li+'" data-b="'+f+'" style="font-size:'+f+'cqw;line-height:'+(f*2.05).toFixed(2)+'cqw;height:'+(f*2.05).toFixed(2)+'cqw">'+ws+'</div></div>';
+  }
   const fs=(t==='j'?20.5:size)/398*100,fs2=fs.toFixed(2);
   return '<div class="ln '+t+'" style="font-size:'+fs2+'cqw" data-b="'+fs2+'">'+ws+'</div>';
 }
@@ -51,6 +80,7 @@ function render(p,q){
   const mk=q?findIn(p,q).marks:null;
   $('txt').innerHTML=D.pages[p-1].map((l,i)=>lineHTML(l[0],l[1],l[2],p,i,mk)).join('');
   $('txt').classList.toggle('rwm',rivOn());
+  document.body.classList.toggle('lgv',!!VIEW);
   fitLines();
   $('pg').value=p;
   try{localStorage.setItem('mushaf-page',String(p))}catch(e){}
@@ -413,3 +443,15 @@ Promise.all([fetch('data/pages.json?v='+VER).then(r=>r.json()),fetch(CFG.data+'?
  .catch(()=>{ $('txt').innerHTML='<p class="ld">تعذّر تحميل المصحف. تحقّق من الاتصال ثم أعد فتح الصفحة.</p>' });
 
 if($('srcpop')){ $('srcpop').addEventListener('click',e=>{ if(e.target===$('srcpop')) closeSrc() }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('srcpop').classList.contains('o')) closeSrc() }) }
+
+/* اختيار طريقة العرض في القائمة الجانبية */
+(function(){
+  const dr=$('drawer'); if(!dr) return;
+  const box=document.createElement('div'); box.className='vw'; box.innerHTML='<div class="dh3">طريقة العرض</div><div class="vws" role="group" aria-label="طريقة العرض"></div>';
+  const dh=dr.querySelector('.dh'); dh.parentNode.insertBefore(box,dh.nextSibling);
+  const opts=[[0,'صفحة المصحف'],[2,'كبير: سطران'],[3,'أكبر: ٣ أسطر']], g=box.querySelector('.vws');
+  const mark=()=>g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===VIEW)));
+  opts.forEach(([v,t])=>{ const b=document.createElement('button'); b.type='button'; b.dataset.v=v; b.textContent=t; g.appendChild(b) });
+  g.addEventListener('click',e=>{ const b=e.target.closest('button[data-v]'); if(!b) return; VIEW=+b.dataset.v; try{localStorage.setItem('mushaf-view',String(VIEW))}catch(e2){} mark(); closeDrawer(()=>render(cur)) });
+  mark();
+})();

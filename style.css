@@ -204,3 +204,13 @@ body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
 
 .srcl{margin:6px 0 0;font:12px system-ui,'Segoe UI',sans-serif;color:var(--muted)}
 .srcrow{display:flex;align-items:center;gap:10px;min-height:48px;font:16px system-ui,'Segoe UI',sans-serif;border-bottom:1px solid var(--line)}.srcrow input{width:22px;height:22px}.srcrow small{margin-inline-start:auto;color:var(--muted)}
+
+/* العرض بخط كبير */
+.vw{padding:2px 12px 8px;border-bottom:1px solid var(--line);position:sticky;top:61px;background:var(--sheet);z-index:1}
+.vw .dh3{margin:8px 2px 6px}
+.vws{display:flex;gap:6px}
+.vws button{flex:1;min-height:42px;border-radius:10px;font:700 13px system-ui,"Segoe UI",sans-serif;text-align:center;padding:0 4px}
+.vws button[aria-pressed="true"]{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
+.lgv .leaf{width:min(100%,760px)}
+.lgrp{margin-bottom:3.2cqw}
+.ln.lg{white-space:nowrap}
