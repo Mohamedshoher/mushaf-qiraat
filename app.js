@@ -458,7 +458,7 @@ if($('srcpop')){ $('srcpop').addEventListener('click',e=>{ if(e.target===$('srcp
   mark();
 })();
 
-/* تحديد كلمة والسؤال عنها في Gemini */
+/* تحديد كلمة أو أكثر والسؤال عنها في Gemini */
 const ARD=t=>+t.replace(/[\u0660-\u0669]/g,c=>c.charCodeAt(0)-0x660);
 function ayahOf(p,li,wi){
   const L=D.pages[p-1]; let hc=0; for(let i=0;i<li;i++) if(L[i][0]==='h') hc++;
@@ -469,8 +469,11 @@ function ayahOf(p,li,wi){
   for(let q=p+1;a===null&&q<=Math.min(604,p+3);q++){ for(const l of D.pages[q-1]){ if(l[0]==='h') continue; a=scan(l[2],0); if(a!==null) break } }
   return {s:sIdx,a:a};
 }
-let QSEL=null;
-function qClear(){ const o=document.querySelector('#txt .qsel'); if(o) o.classList.remove('qsel'); QSEL=null; const b=$('qbar'); if(b) b.classList.remove('o') }
+
+let QS=null; // {a:العنصر الأول المضغوط, e:العنصر الأخير, els:[...]}
+const QMAX=14;
+const qAll=()=>[...document.querySelectorAll('#txt [data-i]')];
+function qClear(){ document.querySelectorAll('#txt .qsel').forEach(x=>x.classList.remove('qsel')); QS=null; const b=$('qbar'); if(b) b.classList.remove('o') }
 const BK={
   farida:'١) «فريدة الدهر في تأصيل وجمع القراءات» (رابطه على المكتبة الشاملة: https://shamela.ws/book/29909)',
   hadi:'«الهادي شرح طيبة النشر في القراءات العشر، والكشف عن علل القراءات وتوجيهها» للدكتور محمد سالم محيسن',
@@ -480,63 +483,73 @@ const BOOKS={
   kubra:{mushaf:'مصحف القراءات العشر الكبرى (من طريق طيبة النشر)',books:[BK.farida.replace('١) ',''),BK.hadi]},
   sughra:{mushaf:'مصحف القراءات العشر الصغرى (من طريقي الشاطبية والدرة)',books:[BK.budur]}
 };
-function geminiPrompt(w,wp,sn,an,p){
-  const B=BOOKS[CFG.kind]||BOOKS.sughra, n=B.books.length;
+
+function geminiPrompt(q){
+  const B=BOOKS[CFG.kind]||BOOKS.sughra, n=B.books.length, ph=q.n>1;
   const lst=B.books.map((x,i)=>(i+1)+'. '+x).join('\n');
-  return 'اذهب إلى المكتبة الشاملة (shamela.ws) وابحث فيها عن كلمة قرآنية في '+(n>1?'الكتب':'الكتاب')+' التالي'+(n>1?'ة':'')+' فقط، ثم أعطني خلاصة ما ورد فيها.\n\n'
-  +'الكلمة: «'+w+'» ('+wp+')\n'
-  +'موضعها: سورة '+sn+'، الآية '+an+' (صفحة '+p+' من '+B.mushaf+')\n\n'
+  return 'اذهب إلى المكتبة الشاملة (shamela.ws) وابحث فيها عن '+(ph?'عبارة قرآنية':'كلمة قرآنية')+' في '+(n>1?'الكتب':'الكتاب')+' التالي'+(n>1?'ة':'')+' فقط، ثم أعطني خلاصة ما ورد فيها.\n\n'
+  +(ph?'العبارة (تُبحث كجملة واحدة متصلة لا ككلمات منفصلة): «':'الكلمة: «')+q.t+'» ('+q.p+')\n'
+  +'موضعها: '+q.loc+' (صفحة '+q.pg+' من '+B.mushaf+')\n\n'
   +(n>1?'الكتب المطلوبة (وهي وحدها مصدرك):\n':'الكتاب المطلوب (وهو وحده مصدرك):\n')+lst+'\n\n'
-  +'خطوات العمل: افتح '+(n>1?'كل كتاب من هذه الكتب':'هذا الكتاب')+' في المكتبة الشاملة، وابحث فيه عن السورة والآية ثم عن الكلمة، واقرأ ما ورد فيها قبل أن تجيب.\n\n'
+  +'خطوات العمل: افتح '+(n>1?'كل كتاب من هذه الكتب':'هذا الكتاب')+' في المكتبة الشاملة، وابحث فيه عن السورة والآية ثم عن '+(ph?'العبارة':'الكلمة')+'، واقرأ ما ورد فيها قبل أن تجيب.\n\n'
   +'شروط صارمة:\n'
   +'١. لا تخرج عن '+(n>1?'هذه الكتب':'هذا الكتاب')+' إلى كتاب آخر أو موقع آخر أو معلوماتك العامة.\n'
-  +'٢. لا تخمّن ولا تُكمل من عندك. وإن لم تجد الكلمة أو الآية في '+(n>1?'كتابٍ منها':'الكتاب')+' فقل صراحة: «لم أجد في كتاب كذا».\n'
+  +'٢. لا تخمّن ولا تُكمل من عندك. وإن لم تجد '+(ph?'العبارة':'الكلمة')+' أو الآية في '+(n>1?'كتابٍ منها':'الكتاب')+' فقل صراحة: «لم أجد في كتاب كذا».\n'
   +'٣. انقل النصوص المهمة بحروفها بين علامتي تنصيص، واذكر اسم الكتاب ورقم الجزء والصفحة لكل نقل، وميّز المتن عن الحاشية.\n'
-  +'٤. إن وردت الكلمة نفسها في سورة أخرى فلا تخلطها بهذا الموضع.\n\n'
+  +'٤. '+(ph?'ابحث عن العبارة كلها كوحدة واحدة، وما قيل في كلماتها مجتمعةً أو في الخلاف المتعلق بها، ولا تفرّقها إلى كلمات مستقلة إلا إن ربط الكتاب بينها.':'إن وردت الكلمة نفسها في سورة أخرى فلا تخلطها بهذا الموضع.')+'\n\n'
   +'المطلوب في الجواب'+(n>1?'، مفصولاً بحسب كل كتاب':'')+':\n'
-  +'أ) مذاهب القرّاء في الكلمة: من قرأ بماذا (القراء أو الرواة، ومن قرأ بالوجه الآخر).\n'
+  +'أ) مذاهب القرّاء: من قرأ بماذا (القراء أو الرواة، ومن قرأ بالوجه الآخر).\n'
   +'ب) الرواة والطرق إن ذكرها الكتاب، وما فيه من خلاف أو تحرير.\n'
   +'ج) الشاهد (بيت الشاطبية أو الدرة أو الطيبة) إن ذكره الكتاب.\n'
   +'د) التوجيه إن ذُكر.\n'
   +'هـ) النصوص المنقولة مع أرقام الصفحات.';
 }
-function claudePrompt(w,wp,sn,an,p){
-  const B=BOOKS[CFG.kind]||BOOKS.sughra, n=B.books.length;
-  const names=B.books.map(x=>x.replace(/\s*\(رابطه[^)]*\)/,'')).join(' ، ');
-  return 'ابحث في المكتبة الشاملة (استعمل أدواتها: ابحث في الكتب ثم اقرأ الصفحات نفسها) عن الكلمة القرآنية «'+w+'» ('+wp+') في سورة '+sn+' الآية '+an+'، في '+(n>1?'هذين الكتابين':'هذا الكتاب')+' فقط: '+names+'.\n'
-  +'لا تخرج عنهما ولا تعتمد على معلوماتك العامة، ولا تخمّن. وإن لم تجد في أحدهما فقل «لم أجد».\n'
-  +'أعطني الخلاصة مفصولة حسب كل كتاب: ١) مذاهب القرّاء في الكلمة (من قرأ بماذا) ٢) الرواة والطرق والتحرير إن ذُكر ٣) الشاهد من الشاطبية أو الدرة أو الطيبة إن وُجد ٤) التوجيه ٥) النصوص المنقولة بحروفها بين علامتي تنصيص مع اسم الكتاب والجزء والصفحة، مع التمييز بين المتن والحاشية.';
-}
+function qRange(x,y){ const all=qAll(), i=all.indexOf(x), j=all.indexOf(y); if(i<0||j<0) return [x]; return all.slice(Math.min(i,j),Math.max(i,j)+1) }
 function qSelect(el){
-  const t=el.textContent.replace(/[\u0001-\u0007]/g,'').trim();
-  if(!t||/\u06DD/.test(t)) return;
-  qClear(); QSEL=el; el.classList.add('qsel');
-  const [li,wi]=el.dataset.i.split(':').map(Number);
-  const ay=ayahOf(cur,li,wi), sr=D.surahs.find(x=>x[0]===ay.s);
-  QSEL={el,t,p:plain(t.replace(/[\u0001-\u0007]/g,'')),sn:sr?plain(sr[1]):'؟',an:ay.a||'؟'};
+  const raw=e=>e.textContent.replace(/[\u0001-\u0007]/g,'').trim();
+  if(!raw(el)||/۝/.test(raw(el))) return;
+  let els;
+  if(QS&&QS.a!==el){
+    els=qRange(QS.a,el);
+    if(els.filter(e=>!/۝/.test(raw(e))).length>QMAX){ qToast('الحدّ الأقصى '+QMAX+' كلمة'); return }
+    QS.e=el;
+  } else if(QS&&QS.a===el&&QS.els.length===1){ qClear(); return }
+  else { qClear(); QS={a:el,e:el}; els=[el] }
+  QS.els=els;
+  document.querySelectorAll('#txt .qsel').forEach(x=>x.classList.remove('qsel'));
+  els.forEach(e=>e.classList.add('qsel'));
+  const words=els.filter(e=>!/۝/.test(raw(e)));
+  const f=words[0], l=words[words.length-1];
+  const pos=e=>{ const [li,wi]=e.dataset.i.split(':').map(Number); return ayahOf(cur,li,wi) };
+  const A=pos(f), Z=pos(l), nm=x=>{const r=D.surahs.find(y=>y[0]===x.s); return r?plain(r[1]):'؟'};
+  const loc=(A.s===Z.s&&A.a===Z.a)?'سورة '+nm(A)+'، الآية '+(A.a||'؟')
+    :(A.s===Z.s)?'سورة '+nm(A)+'، الآيات '+(A.a||'؟')+' – '+(Z.a||'؟')
+    :'من سورة '+nm(A)+' الآية '+(A.a||'؟')+' إلى سورة '+nm(Z)+' الآية '+(Z.a||'؟');
+  const t=words.map(raw).join(' ');
+  QS.q={t,p:plain(t),n:words.length,loc,pg:cur};
   let b=$('qbar');
   if(!b){ b=document.createElement('div'); b.id='qbar'; b.className='qbar'; b.setAttribute('role','dialog');
-    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qclaude" type="button">اسأل Claude</button><button id="qask" type="button">Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
+    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qask" type="button">اسأل Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
     document.body.appendChild(b);
     $('qcl').onclick=qClear;
-    $('qclaude').onclick=()=>{ if(!QSEL) return; const q=QSEL, txt=claudePrompt(q.t,q.p,q.sn,q.an);
-      try{ navigator.clipboard.writeText(txt).catch(()=>qFallback(txt)) }catch(e){ qFallback(txt) }
-      window.open('https://claude.ai/new?q='+encodeURIComponent(txt),'_blank','noopener');
-    };
-    $('qask').onclick=()=>{ if(!QSEL) return; const q=QSEL, txt=geminiPrompt(q.t,q.p,q.sn,q.an,cur);
-      const done=()=>{ try{ qToast('نُسخ السؤال — الصقه في Gemini') }catch(e){} };
+    $('qask').onclick=()=>{ if(!QS||!QS.q) return; const txt=geminiPrompt(QS.q);
+      const done=()=>qToast('نُسخ السؤال — الصقه في Gemini');
       try{ navigator.clipboard.writeText(txt).then(done,()=>{ qFallback(txt); done() }) }catch(e){ qFallback(txt); done() }
       window.open('https://gemini.google.com/app','_blank','noopener');
     };
   }
-  b.querySelector('.qt').innerHTML='<b>«'+esc(t)+'»</b> — سورة '+esc(String(QSEL.sn))+'، الآية '+esc(String(QSEL.an));
+  b.querySelector('.qt').innerHTML='<b>«'+esc(t)+'»</b><br><span class="qs">'+esc(loc)+(QS.q.n===1?'':' — '+QS.q.n+' كلمات')+'</span>'+(QS.q.n===1?'<span class="qh">انقر كلمة أخرى لتوسيع التحديد</span>':'');
   b.classList.add('o');
 }
 function qFallback(txt){ const a=document.createElement('textarea'); a.value=txt; a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(e){} a.remove() }
 function qToast(m){ let t=$('qtoast'); if(!t){ t=document.createElement('div'); t.id='qtoast'; t.className='qtoast'; document.body.appendChild(t) } t.textContent=m; t.classList.add('o'); clearTimeout(qToast.h); qToast.h=setTimeout(()=>t.classList.remove('o'),3500) }
 (function(){
   const tx=$('txt'); let timer=null,lp=false,sx=0,sy=0;
-  tx.addEventListener('click',e=>{ if(lp){ lp=false; e.stopPropagation(); e.preventDefault(); return } const q=e.target.closest('.q'); if(q) qSelect(q) },true);
+  tx.addEventListener('click',e=>{
+    if(lp){ lp=false; e.stopPropagation(); e.preventDefault(); return }
+    const w=e.target.closest('[data-i]'); if(!w) return;
+    if(w.classList.contains('q')||QS){ e.stopPropagation(); e.preventDefault(); qSelect(w) }
+  },true);
   tx.addEventListener('pointerdown',e=>{ const w=e.target.closest('[data-i]'); if(!w) return; sx=e.clientX; sy=e.clientY; clearTimeout(timer); timer=setTimeout(()=>{ lp=true; qSelect(w) },520) });
   const stop=()=>clearTimeout(timer);
   tx.addEventListener('pointerup',stop); tx.addEventListener('pointercancel',stop); tx.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>10) stop() });
