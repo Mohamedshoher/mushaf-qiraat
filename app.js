@@ -500,6 +500,13 @@ function geminiPrompt(w,wp,sn,an,p){
   +'د) التوجيه إن ذُكر.\n'
   +'هـ) النصوص المنقولة مع أرقام الصفحات.';
 }
+function claudePrompt(w,wp,sn,an,p){
+  const B=BOOKS[CFG.kind]||BOOKS.sughra, n=B.books.length;
+  const names=B.books.map(x=>x.replace(/\s*\(رابطه[^)]*\)/,'')).join(' ، ');
+  return 'ابحث في المكتبة الشاملة (استعمل أدواتها: ابحث في الكتب ثم اقرأ الصفحات نفسها) عن الكلمة القرآنية «'+w+'» ('+wp+') في سورة '+sn+' الآية '+an+'، في '+(n>1?'هذين الكتابين':'هذا الكتاب')+' فقط: '+names+'.\n'
+  +'لا تخرج عنهما ولا تعتمد على معلوماتك العامة، ولا تخمّن. وإن لم تجد في أحدهما فقل «لم أجد».\n'
+  +'أعطني الخلاصة مفصولة حسب كل كتاب: ١) مذاهب القرّاء في الكلمة (من قرأ بماذا) ٢) الرواة والطرق والتحرير إن ذُكر ٣) الشاهد من الشاطبية أو الدرة أو الطيبة إن وُجد ٤) التوجيه ٥) النصوص المنقولة بحروفها بين علامتي تنصيص مع اسم الكتاب والجزء والصفحة، مع التمييز بين المتن والحاشية.';
+}
 function qSelect(el){
   const t=el.textContent.replace(/[\u0001-\u0007]/g,'').trim();
   if(!t||/\u06DD/.test(t)) return;
@@ -509,9 +516,13 @@ function qSelect(el){
   QSEL={el,t,p:plain(t.replace(/[\u0001-\u0007]/g,'')),sn:sr?plain(sr[1]):'؟',an:ay.a||'؟'};
   let b=$('qbar');
   if(!b){ b=document.createElement('div'); b.id='qbar'; b.className='qbar'; b.setAttribute('role','dialog');
-    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qask" type="button">اسأل Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
+    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qclaude" type="button">اسأل Claude</button><button id="qask" type="button">Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
     document.body.appendChild(b);
     $('qcl').onclick=qClear;
+    $('qclaude').onclick=()=>{ if(!QSEL) return; const q=QSEL, txt=claudePrompt(q.t,q.p,q.sn,q.an);
+      try{ navigator.clipboard.writeText(txt).catch(()=>qFallback(txt)) }catch(e){ qFallback(txt) }
+      window.open('https://claude.ai/new?q='+encodeURIComponent(txt),'_blank','noopener');
+    };
     $('qask').onclick=()=>{ if(!QSEL) return; const q=QSEL, txt=geminiPrompt(q.t,q.p,q.sn,q.an,cur);
       const done=()=>{ try{ qToast('نُسخ السؤال — الصقه في Gemini') }catch(e){} };
       try{ navigator.clipboard.writeText(txt).then(done,()=>{ qFallback(txt); done() }) }catch(e){ qFallback(txt); done() }

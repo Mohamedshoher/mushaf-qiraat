@@ -228,3 +228,6 @@ body{padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
 #qask{background:var(--accent);color:var(--sheet);border-color:var(--accent)}
 .qtoast{position:fixed;left:50%;top:70px;transform:translate(-50%,-30px);opacity:0;pointer-events:none;background:#222;color:#fff;padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;z-index:30;transition:.25s}
 .qtoast.o{opacity:1;transform:translate(-50%,0)}
+#qclaude{background:#c96442;color:#fff;border-color:#c96442}
+#qask{background:transparent;color:var(--ink);border-color:var(--line)}
+.qb{flex-wrap:wrap;justify-content:flex-end}
