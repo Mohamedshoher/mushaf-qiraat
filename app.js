@@ -533,9 +533,9 @@ function qSelect(el){
     document.body.appendChild(b);
     $('qcl').onclick=qClear;
     $('qask').onclick=()=>{ if(!QS||!QS.q) return; const txt=nbPrompt(QS.q), url=NB[CFG.kind]||'';
-      const done=()=>qToast(url?'نُسخ السؤال — الصقه في الدفتر':'نُسخ السؤال، لكن رابط الدفتر لم يُضبط بعد');
-      try{ navigator.clipboard.writeText(txt).then(done,()=>{ qFallback(txt); done() }) }catch(e){ qFallback(txt); done() }
-      if(url) window.open(url,'_blank','noopener');
+      let gone=false; const go=()=>{ if(gone) return; gone=true; if(url) location.href=url; else qToast('نُسخ السؤال، لكن رابط الدفتر لم يُضبط بعد') };
+      try{ navigator.clipboard.writeText(txt).then(go,()=>{ qFallback(txt); go() }) }catch(e){ qFallback(txt); go() }
+      setTimeout(go,900);
     };
   }
   b.querySelector('.qt').innerHTML='<b>«'+esc(t)+'»</b><br><span class="qs">'+esc(loc)+(QS.q.n===1?'':' — '+QS.q.n+' كلمات')+'</span>'+(QS.q.n===1?'<span class="qh">انقر كلمة أخرى لتوسيع التحديد</span>':'');
