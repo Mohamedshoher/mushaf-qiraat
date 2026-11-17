@@ -458,7 +458,7 @@ if($('srcpop')){ $('srcpop').addEventListener('click',e=>{ if(e.target===$('srcp
   mark();
 })();
 
-/* تحديد كلمة أو أكثر والسؤال عنها في Gemini */
+/* تحديد كلمة أو أكثر والسؤال عنها في NotebookLM */
 const ARD=t=>+t.replace(/[\u0660-\u0669]/g,c=>c.charCodeAt(0)-0x660);
 function ayahOf(p,li,wi){
   const L=D.pages[p-1]; let hc=0; for(let i=0;i<li;i++) if(L[i][0]==='h') hc++;
@@ -484,25 +484,25 @@ const BOOKS={
   sughra:{mushaf:'مصحف القراءات العشر الصغرى (من طريقي الشاطبية والدرة)',books:[BK.budur]}
 };
 
-function geminiPrompt(q){
+/* روابط دفاتر NotebookLM: ضع الرابط بين علامتي التنصيص */
+const NB={
+  kubra:'',   // دفتر الكبرى (الفريدة + الهادي)
+  sughra:''   // دفتر الصغرى (البدور الزاهرة)
+};
+function nbPrompt(q){
   const B=BOOKS[CFG.kind]||BOOKS.sughra, n=B.books.length, ph=q.n>1;
-  const lst=B.books.map((x,i)=>(i+1)+'. '+x).join('\n');
-  return 'اذهب إلى المكتبة الشاملة (shamela.ws) وابحث فيها عن '+(ph?'عبارة قرآنية':'كلمة قرآنية')+' في '+(n>1?'الكتب':'الكتاب')+' التالي'+(n>1?'ة':'')+' فقط، ثم أعطني خلاصة ما ورد فيها.\n\n'
-  +(ph?'العبارة (تُبحث كجملة واحدة متصلة لا ككلمات منفصلة): «':'الكلمة: «')+q.t+'» ('+q.p+')\n'
-  +'موضعها: '+q.loc+' (صفحة '+q.pg+' من '+B.mushaf+')\n\n'
-  +(n>1?'الكتب المطلوبة (وهي وحدها مصدرك):\n':'الكتاب المطلوب (وهو وحده مصدرك):\n')+lst+'\n\n'
-  +'خطوات العمل: افتح '+(n>1?'كل كتاب من هذه الكتب':'هذا الكتاب')+' في المكتبة الشاملة، وابحث فيه عن السورة والآية ثم عن '+(ph?'العبارة':'الكلمة')+'، واقرأ ما ورد فيها قبل أن تجيب.\n\n'
-  +'شروط صارمة:\n'
-  +'١. لا تخرج عن '+(n>1?'هذه الكتب':'هذا الكتاب')+' إلى كتاب آخر أو موقع آخر أو معلوماتك العامة.\n'
-  +'٢. لا تخمّن ولا تُكمل من عندك. وإن لم تجد '+(ph?'العبارة':'الكلمة')+' أو الآية في '+(n>1?'كتابٍ منها':'الكتاب')+' فقل صراحة: «لم أجد في كتاب كذا».\n'
-  +'٣. انقل النصوص المهمة بحروفها بين علامتي تنصيص، واذكر اسم الكتاب ورقم الجزء والصفحة لكل نقل، وميّز المتن عن الحاشية.\n'
-  +'٤. '+(ph?'ابحث عن العبارة كلها كوحدة واحدة، وما قيل في كلماتها مجتمعةً أو في الخلاف المتعلق بها، ولا تفرّقها إلى كلمات مستقلة إلا إن ربط الكتاب بينها.':'إن وردت الكلمة نفسها في سورة أخرى فلا تخلطها بهذا الموضع.')+'\n\n'
-  +'المطلوب في الجواب'+(n>1?'، مفصولاً بحسب كل كتاب':'')+':\n'
-  +'أ) مذاهب القرّاء: من قرأ بماذا (القراء أو الرواة، ومن قرأ بالوجه الآخر).\n'
-  +'ب) الرواة والطرق إن ذكرها الكتاب، وما فيه من خلاف أو تحرير.\n'
-  +'ج) الشاهد (بيت الشاطبية أو الدرة أو الطيبة) إن ذكره الكتاب.\n'
-  +'د) التوجيه إن ذُكر.\n'
-  +'هـ) النصوص المنقولة مع أرقام الصفحات.';
+  const names=B.books.map(x=>x.replace(/\s*\(رابطه[^)]*\)/,'')).join(' ، ');
+  return 'اعتمد على المصادر المرفوعة في هذا الدفتر وحدها ('+names+')، ولا تستعمل أي معلومة من خارجها.\n\n'
+  +'ابحث عن '+(ph?'العبارة القرآنية («'+q.t+'») كجملة واحدة متصلة':'الكلمة القرآنية «'+q.t+'»')+' ('+q.p+')\n'
+  +'موضعها: '+q.loc+' (صفحة '+q.pg+' من '+B.mushaf+').\n\n'
+  +'أعطني الخلاصة'+(n>1?' مفصولة حسب كل كتاب':'')+':\n'
+  +'١) مذاهب القرّاء: من قرأ بماذا (القراء أو الرواة، ومن قرأ بالوجه الآخر).\n'
+  +'٢) الرواة والطرق وما فيه من خلاف أو تحرير، إن ذُكر.\n'
+  +'٣) الشاهد (بيت الشاطبية أو الدرة أو الطيبة) إن وُجد.\n'
+  +'٤) التوجيه إن ذُكر.\n'
+  +'٥) النصوص المنقولة بحروفها بين علامتي تنصيص، مع اسم الكتاب ورقم الجزء والصفحة، وميّز المتن عن الحاشية.\n\n'
+  +'إن لم تجد '+(ph?'العبارة':'الكلمة')+' أو الآية في المصادر فقل صراحة: «لم أجد في المصادر»، ولا تخمّن ولا تُكمل من عندك. '
+  +(ph?'ابحث عن العبارة كلها وعمّا قيل في كلماتها مجتمعةً، ولا تفرّقها إلا إن ربط الكتاب بينها.':'لا تخلط هذا الموضع بالكلمة نفسها في سورة أخرى.');
 }
 function qRange(x,y){ const all=qAll(), i=all.indexOf(x), j=all.indexOf(y); if(i<0||j<0) return [x]; return all.slice(Math.min(i,j),Math.max(i,j)+1) }
 function qSelect(el){
@@ -529,13 +529,13 @@ function qSelect(el){
   QS.q={t,p:plain(t),n:words.length,loc,pg:cur};
   let b=$('qbar');
   if(!b){ b=document.createElement('div'); b.id='qbar'; b.className='qbar'; b.setAttribute('role','dialog');
-    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qask" type="button">اسأل Gemini</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
+    b.innerHTML='<div class="qt"></div><div class="qb"><button id="qask" type="button">اسأل NotebookLM</button><button id="qcl" type="button" aria-label="إغلاق">✕</button></div>';
     document.body.appendChild(b);
     $('qcl').onclick=qClear;
-    $('qask').onclick=()=>{ if(!QS||!QS.q) return; const txt=geminiPrompt(QS.q);
-      const done=()=>qToast('نُسخ السؤال — الصقه في Gemini');
+    $('qask').onclick=()=>{ if(!QS||!QS.q) return; const txt=nbPrompt(QS.q), url=NB[CFG.kind]||'';
+      const done=()=>qToast(url?'نُسخ السؤال — الصقه في الدفتر':'نُسخ السؤال، لكن رابط الدفتر لم يُضبط بعد');
       try{ navigator.clipboard.writeText(txt).then(done,()=>{ qFallback(txt); done() }) }catch(e){ qFallback(txt); done() }
-      window.open('https://gemini.google.com/app','_blank','noopener');
+      if(url) window.open(url,'_blank','noopener');
     };
   }
   b.querySelector('.qt').innerHTML='<b>«'+esc(t)+'»</b><br><span class="qs">'+esc(loc)+(QS.q.n===1?'':' — '+QS.q.n+' كلمات')+'</span>'+(QS.q.n===1?'<span class="qh">انقر كلمة أخرى لتوسيع التحديد</span>':'');
