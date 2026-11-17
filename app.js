@@ -486,7 +486,7 @@ const BOOKS={
 
 /* روابط دفاتر NotebookLM: ضع الرابط بين علامتي التنصيص */
 const NB={
-  kubra:'',   // دفتر الكبرى (الفريدة + الهادي)
+  kubra:'https://notebook.google.com/notebook/25154c09-4238-44d0-ae84-a023ffe4bede',   // دفتر الكبرى (الفريدة + الهادي)
   sughra:''   // دفتر الصغرى (البدور الزاهرة)
 };
 function nbPrompt(q){

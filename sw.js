@@ -1,4 +1,4 @@
-const N='46', V='mushaf-v'+N;
+const N='47', V='mushaf-v'+N;
 const CORE=['./','index.html','kubra.html','style.css?v='+N,'app.js?v='+N,'amiri_sub.woff2','kf.otf','manifest.webmanifest','icon-192.png','icon-512.png','data/pages.json?v='+N,'data/sughra.json?v='+N,'data/kubra.json?v='+N];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
